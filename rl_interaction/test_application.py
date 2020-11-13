@@ -63,6 +63,8 @@ def main():
 
     args = parser.parse_args()
     max_trials = args.trials_per_app
+    if max_trials <= 0:
+        raise Exception('Are U Kidding Me ? -.- max_trials must be > 0')
     timesteps = args.timesteps
     max_timesteps = args.max_timesteps
     pool_strings = args.pool_strings
@@ -89,8 +91,8 @@ def main():
         is_headless = True
 
     # Put all APKs in folder apps
+
     path = os.path.join(os.getcwd(), app_path)
-    # Listing all APKs in folder apps
     my_log = logger.add(os.path.join('logs', 'logger.log'), format="{time} {level} {message}",
                         filter=lambda record: record["level"].name == "INFO" or "ERROR")
 
@@ -98,10 +100,10 @@ def main():
     if real_device:
         emulator = None
     else:
-        emulator = EmulatorLauncher(emu, device_name, android_port)
+        emulator = EmulatorLauncher(emu, device_name, android_port, speedup=True)
         time.sleep(3.5)
 
-    # listing all applications
+    # Listing all APKs in folder apps
     apps = glob.glob(path + os.sep + '*.apk')
 
     if len(apps) == 0:
@@ -130,8 +132,10 @@ def main():
             while cycle < N:
                 logger.info(f'app: {app_name}, test {cycle} of {N} starting')
                 # coverage dir
-                coverage_dir = os.path.join(os.getcwd(), 'coverage', app_name, algo, str(cycle))
-                os.makedirs(coverage_dir, exist_ok=True)
+                coverage_dir=''
+                if instr:
+                    coverage_dir = os.path.join(os.getcwd(), 'coverage', app_name, algo, str(cycle))
+                    os.makedirs(coverage_dir, exist_ok=True)
                 # logs dir
                 log_dir = os.path.join(os.getcwd(), 'logs', app_name, algo, str(cycle))
                 os.makedirs(log_dir, exist_ok=True)
@@ -177,6 +181,12 @@ def main():
                     elif algo == 'test':
                         algorithm = TestApp()
                     flag = algorithm.explore(app, emulator, appium, timesteps, timer)
+                    if flag:
+                        with open(f'logs{os.sep}success.log', 'a+') as f:
+                            f.write(f'{app_name}\n')
+                    else:
+                        with open(f'logs{os.sep}error.log', 'a+') as f:
+                            f.write(f'{app_name}\n')
                 except Exception as e:
                     logger.error(e)
                     flag = False

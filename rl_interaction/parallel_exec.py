@@ -46,9 +46,11 @@ def main():
     parser.add_argument('--max_timesteps', type=int, default=250)
     # file of strings.txt (one string per line)
     parser.add_argument('--pool_strings', type=str, default='strings.txt')
+    parser.add_argument('--trials_per_app', type=str, default=1)
 
     args = parser.parse_args()
     algo = args.algo
+    trials_per_app = args.trials_per_app
     instr = args.instr
     rot = args.rotation
     internet = args.internet
@@ -87,7 +89,7 @@ def main():
                str(appium_ports[i]), '--timesteps', str(timesteps), '--iterations', str(iterations),
                '--udid', str(udids[i]), '--android_port', str(android_ports[i]), '--device_name', device_names[i],
                '--app_path', app_paths[i], '--max_timesteps', str(max_timesteps), '--pool_strings', pool_strings,
-               '--timer', str(timer), '--platform_version', android_v]
+               '--timer', str(timer), '--platform_version', android_v, '--trials_per_app', str(trials_per_app)]
         if emu is not None:
             cmd = cmd + ['--emu', emu]
         if instr:

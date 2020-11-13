@@ -69,7 +69,7 @@ class EmulatorLauncher:
             if self.speedup:
                 self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
                                                  '-port', f'{self.android_port}'])
-                time.sleep(15)
+                time.sleep(18)
             else:
                 self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
                                                  '-port', f'{self.android_port}', '-no-snapshot', '-no-boot-anim', '-wipe-data'])

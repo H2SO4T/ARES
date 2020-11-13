@@ -8,14 +8,8 @@ class TestApp(ExplorationAlgorithm):
         try:
             app.reset()
             if app.bug:
-                with open('error.txt', 'a+') as f:
-                    f.write(f'{app.package}\n')
+                return False
             else:
-                with open('success.txt', 'a+') as f:
-                    f.write(f'{app.package}\n')
-            return True
-
+                return True
         except Exception:
-            with open('error.txt', 'a+') as f:
-                f.write(f'{app.package}\n')
-            return True
+            return False
