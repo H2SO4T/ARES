@@ -7,9 +7,11 @@ from loguru import logger
 
 
 def collect_coverage(udid, package, coverage_dir, coverage_count):
-    os.system(f'adb -s {udid} shell am broadcast -p {package} -a intent.END_COVERAGE')
-    os.system(f'adb -s {udid} pull /sdcard/Android/data/{package}/files/coverage.ec '
-              f'{os.path.join(".", coverage_dir, str(coverage_count))}.ec')
+    os.system(f'adb -s {udid} shell am broadcast -a edu.gatech.m3.emma.COLLECT_COVERAGE')
+    # os.system(f'adb  shell am broadcast -p {package} -a intent.END_COVERAGE')
+    os.system(f'adb -s {udid} pull /mnt/sdcard/coverage.ec {os.path.join(".", coverage_dir, str(coverage_count))}.ec')
+    # os.system(f'adb -s {udid} pull /sdcard/Android/data/{package}/files/coverage.ec '
+    #         f'{os.path.join(".", coverage_dir, str(coverage_count))}.ec')
 
 
 class TimerCallback(BaseCallback):

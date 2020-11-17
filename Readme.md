@@ -46,7 +46,7 @@ ARES is a tool based on Appium, it uses Deep Reinforcement Learning to test and 
 
 ## For real devices
 
-* Buy one or more Android device
+* Buy one or more Android devices
 
 * Run the testing using `parallel_exec.py`:
 
