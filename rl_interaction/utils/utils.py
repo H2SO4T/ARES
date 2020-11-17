@@ -51,7 +51,7 @@ class AppiumLauncher:
 
 class EmulatorLauncher:
 
-    def __init__(self, emu, device_name, android_port, speedup=True):
+    def __init__(self, emu, device_name, android_port, speedup=False):
         self.device_name = '@'+device_name.replace(' ', '_')
         self.emu = emu
         self.android_port = android_port

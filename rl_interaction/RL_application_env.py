@@ -3,6 +3,7 @@ from threading import Thread
 
 from appium.webdriver.extensions.android.gsm import GsmCallActions
 from gym import Env
+
 import os
 import numpy
 import time
@@ -17,6 +18,17 @@ from appium.webdriver.common.touch_action import TouchAction
 from rl_interaction.utils.utils import Utils
 from multiprocessing import Process, Queue
 from appium import webdriver
+
+
+def search_package_and_setprop(folder):
+    '''
+    result = subprocess.run(
+        ["adb", "shell", "su", "0", "find", "/data/data/", "-type", "d", "-name", f'"{package}*"'],
+        capture_output=True)
+    folder = result.stdout.decode('utf-8').strip('\n')
+    '''
+    command = f'adb shell "su 0 setprop jacoco.destfile /data/data/{folder}/jacoco.exec"'
+    os.popen(command).read()
 
 
 def bug_handler(bug_queue, udid):
@@ -45,7 +57,7 @@ class RLApplicationEnv(Env):
     def __init__(self, coverage_dict, app_path, list_activities,
                  widget_list, bug_set, coverage_dir, log_dir, rotation, internet, platform_name, platform_version, udid,
                  device_name,
-                 is_headless, appium, emulator, pool_strings, visited_activities: list, clicked_buttons: list,
+                 is_headless, appium, emulator, package, pool_strings, visited_activities: list, clicked_buttons: list,
                  number_bugs: list, appium_port, max_episode_len=250, string_activities='',
                  instr=False, OBSERVATION_SPACE=2000, ACTION_SPACE=30):
 
@@ -60,6 +72,7 @@ class RLApplicationEnv(Env):
         self.appium_port = appium_port
         self.rotation = rotation
         self.internet = internet
+        self.jacoco_package = package
         if (not rotation) and (not internet):
             self.shift = 0
         elif (not rotation) or (not internet):
@@ -95,6 +108,11 @@ class RLApplicationEnv(Env):
         self.list_activities = list_activities
         self.udid = udid
 
+        if float(platform_version) >= 5.0:
+            automation_name = 'uiautomator2'
+        else:
+            automation_name = 'uiautomator1'
+
         self.desired_caps = {'platformName': platform_name,
                              'platformVersion': platform_version,
                              'udid': udid,
@@ -106,16 +124,15 @@ class RLApplicationEnv(Env):
                              'resetKeyboard': True,
                              'androidInstallTimeout': 30000,
                              'isHeadless': is_headless,
-                             'automationName': 'uiautomator2',
-                             'adbExecTimeout': 50000,
+                             'automationName': automation_name,
+                             'adbExecTimeout': 10000,
                              'appWaitActivity': string_activities,
                              'newCommandTimeout': 200}
 
+        # search_package_and_setprop(self.jacoco_package)
         self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
-
         # First initialization
         self.package = self.driver.current_package
-
         self.current_activity = self.rename_activity(self.driver.current_activity)
         self.old_activity = self.current_activity
 
@@ -199,7 +216,7 @@ class RLApplicationEnv(Env):
                 return self.observation, numpy.array([-100.0]), numpy.array(False), {}
         self.get_observation()
         reward = self.compute_reward()
-        self.append_visited_activities_coverage()
+        # self.append_visited_activities_coverage()
         done = self._termination()
         return self.observation, numpy.array([reward]), numpy.array(done), {}
 
@@ -264,8 +281,10 @@ class RLApplicationEnv(Env):
         logger.debug('---EPISODE RESET---')
         self._md5 = ''
         self.timesteps = 0
+        '''
         if self.instr:
             self.collect_coverage()
+        '''
         try:
             self.driver.reset()
             time.sleep(0.5)

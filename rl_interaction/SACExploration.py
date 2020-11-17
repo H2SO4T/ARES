@@ -14,7 +14,7 @@ class SACAlgorithm(ExplorationAlgorithm):
         try:
             env = TimeFeatureWrapper(app)
             model = SAC(MlpPolicy, env, verbose=1, train_freq=train_freq, target_update_interval=target_update_interval)
-            callback = TimerCallback(timer=timer)
+            callback = TimerCallback(timer=timer, app=app)
             model.learn(total_timesteps=timesteps, callback=callback)
             return True
         except Exception as e:

@@ -20,6 +20,7 @@ from rl_interaction.RL_application_env import RLApplicationEnv
 from androguard.core.bytecodes import apk
 from selenium.common.exceptions import InvalidSessionIdException, WebDriverException
 from loguru import logger
+import subprocess
 
 
 def save_pickles(algo, app_name, cycle, button_list, activities, bugs, bug_set):
@@ -100,7 +101,7 @@ def main():
     if real_device:
         emulator = None
     else:
-        emulator = EmulatorLauncher(emu, device_name, android_port, speedup=True)
+        emulator = EmulatorLauncher(emu, device_name, android_port)
         time.sleep(3.5)
 
     # Listing all APKs in folder apps
@@ -132,7 +133,7 @@ def main():
             while cycle < N:
                 logger.info(f'app: {app_name}, test {cycle} of {N} starting')
                 # coverage dir
-                coverage_dir=''
+                coverage_dir = ''
                 if instr:
                     coverage_dir = os.path.join(os.getcwd(), 'coverage', app_name, algo, str(cycle))
                     os.makedirs(coverage_dir, exist_ok=True)
@@ -146,6 +147,13 @@ def main():
                 visited_activities = []
                 clicked_buttons = []
                 number_bugs = []
+
+                os.system(f'adb install {application}')
+                result = subprocess.run(
+                    ["adb", "shell", "su", "0", "find", "/data/data/", "-type", "d", "-name", f'"{a.package}*"'],
+                    capture_output=True)
+                package = result.stdout.decode('utf-8').strip('\n').rsplit('/')[-1]
+
                 try:
                     app = RLApplicationEnv(coverage_dict, app_path=application,
                                            list_activities=list(coverage_dict.keys()),
@@ -166,8 +174,8 @@ def main():
                                            pool_strings=pool_strings,
                                            device_name=device_name,
                                            max_episode_len=max_timesteps,
-                                           is_headless=is_headless, appium=appium, emulator=emulator)
-                    package = app.package
+                                           is_headless=is_headless, appium=appium, emulator=emulator,
+                                           package=package)
                     if algo == 'TD3':
                         algorithm = TD3Algorithm()
                     elif algo == 'random':
@@ -205,7 +213,7 @@ def main():
                         pass
                     logger.remove(app.logger_id)
                     logger.remove(app.bug_logger_id)
-                    save_pickles(algo, app_name, cycle, clicked_buttons, visited_activities, number_bugs, bug_set)
+                    # save_pickles(algo, app_name, cycle, clicked_buttons, visited_activities, number_bugs, bug_set)
                     logger.info(f'app: {app_name}, test {cycle} of {N} ending\n')
                     cycle += 1
                 else:

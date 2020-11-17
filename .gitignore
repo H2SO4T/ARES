@@ -3,7 +3,6 @@
 *.png
 .idea
 /rl_interaction/apps
-/rl_interaction/apps_used
 /rl_interaction/pickle_files
 /__pycache__
 rl_interaction/utils/__pycache__/*
@@ -12,6 +11,7 @@ rl_interaction/coverage/
 rl_interaction/logger.log
 .old/parallel_rl_env.py
 rl_interaction/tested_apps
+rl_interaction/instrumented_apps
 rl_interaction/.DS_Store
 .DS_Store
 .old
