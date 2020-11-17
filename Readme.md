@@ -6,14 +6,13 @@ ARES is a tool based on Appium, it uses Deep Reinforcement Learning to test and 
 
 # Requirements
 
-* python3
 * Android emulator or smartphone
 * MacOS or Ubuntu or Windows
-* python3.5 and above
+* python3.5 to 3.7 (tensorflow limitation)
 
 # Compatible with
 
-* Android from 6.0 to 10.0
+* Android from 4.4 to 11.0
 
 # Installation and Setup
 
