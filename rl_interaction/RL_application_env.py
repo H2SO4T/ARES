@@ -55,7 +55,8 @@ def bug_handler(bug_queue, udid):
 class RLApplicationEnv(Env):
 
     def __init__(self, coverage_dict, app_path, list_activities,
-                 widget_list, bug_set, coverage_dir, log_dir, rotation, internet, platform_name, platform_version, udid,
+                 widget_list, bug_set, coverage_dir, log_dir, rotation, internet, merdoso_button_menu, platform_name,
+                 platform_version, udid,
                  device_name,
                  is_headless, appium, emulator, package, pool_strings, visited_activities: list, clicked_buttons: list,
                  number_bugs: list, appium_port, max_episode_len=250, string_activities='',
@@ -72,13 +73,14 @@ class RLApplicationEnv(Env):
         self.appium_port = appium_port
         self.rotation = rotation
         self.internet = internet
+        self.merdoso_button_menu = merdoso_button_menu
+
+        self.shift = self.internet + self.rotation + self.merdoso_button_menu
+        self.action_internet = int(self.internet) - 1
+        self.action_rotation = self.internet + self.rotation - 1
+        self.action_menu = self.internet + self.rotation + self.merdoso_button_menu - 1
+
         self.jacoco_package = package
-        if (not rotation) and (not internet):
-            self.shift = 0
-        elif (not rotation) or (not internet):
-            self.shift = 1
-        else:
-            self.shift = 2
         self.visited_activities = visited_activities
         self.clicked_buttons = clicked_buttons
         self.number_bugs = number_bugs
@@ -125,7 +127,7 @@ class RLApplicationEnv(Env):
                              'androidInstallTimeout': 30000,
                              'isHeadless': is_headless,
                              'automationName': automation_name,
-                             'adbExecTimeout': 10000,
+                             'adbExecTimeout': 30000,
                              'appWaitActivity': string_activities,
                              'newCommandTimeout': 200}
 
@@ -179,14 +181,17 @@ class RLApplicationEnv(Env):
 
     def step2(self, action_number):
         # We do a system action
-        if (action_number[0] == 0) and self.internet:
+        if self.internet and (action_number[0] == self.action_internet):
             logger.debug('set connection to ' + str(self.connection))
             self.connection_action()
         # We do a system action
-        elif (action_number[0] == 1) and self.rotation:
+        elif self.rotation and (action_number[0] == self.action_rotation):
             logger.debug('set orientation, original was ' + self.driver.orientation)
             self.orientation()
-            time.sleep(0.3)
+            time.sleep(0.2)
+        elif self.merdoso_button_menu and (action_number[0] == self.action_menu):
+            logger.debug('pressed menu button')
+            self.driver.press_keycode(82)
         else:
             action_number[0] = action_number[0] - self.shift
             current_view = self.views[action_number[0]]
@@ -459,10 +464,10 @@ class RLApplicationEnv(Env):
             except WebDriverException:
                 pass
             self.appium.restart_appium()
-            if self.emulator is not None:
-                self.emulator.restart_emulator()
+            # if self.emulator is not None:
+            self.emulator.restart_emulator()
             self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
-            time.sleep(7)
+            time.sleep(5)
             return self.observation, numpy.array([0.0]), numpy.array(True), {}
 
     def return_attribute(self, my_view):

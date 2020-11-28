@@ -1,8 +1,9 @@
+import glob
 import os
 import platform
 import subprocess
 import argparse
-
+from itertools import zip_longest
 
 def close_old_appium_services():
     system = platform.system()
@@ -25,7 +26,7 @@ def main():
     parser.add_argument('--android_ports', help='android ports e.g. 5554 5556 ...', type=str, required=True)
     parser.add_argument('--udids', type=str, required=False)
     # the folders to pick apks from
-    parser.add_argument('--paths', help='list of folders', type=str, required=True)
+    parser.add_argument('--path', help='folder of apps', type=str, required=True)
     # set a timer for testing
     parser.add_argument('--timer', help='timer duration', type=int, required=True)
     # select platform version
@@ -62,14 +63,19 @@ def main():
     # Appium ports
     appium_ports = [int(p) for p in args.appium_ports.split(" ")]
     android_ports = [int(a_p) for a_p in args.android_ports.split(" ")]
-    app_paths = args.paths.split(" ")
+    path = args.path
+    apps = glob.glob(f'{path}{os.sep}*.apk')
+    app_lists = [list(i) for i in zip_longest(*[apps[i:i+len(android_ports)]
+                                              for i in range(0, len(apps), len(android_ports))])]
+    for i in range(len(app_lists)):
+        app_lists[i] = ','.join(list(filter(None, app_lists[i])))
     timer = args.timer
     timesteps = args.timesteps
     max_timesteps = args.max_timesteps
     pool_strings = args.pool_strings
     android_v = args.platform_version
     iterations = args.iterations
-    assert len(device_names) == len(appium_ports) == len(android_ports) == len(app_paths)
+    assert len(device_names) == len(appium_ports) == len(android_ports)
     udids = []
     # Setting emulator names
     if real_device:
@@ -88,8 +94,9 @@ def main():
         cmd = [py, script, '--algo', algo, '--appium_port',
                str(appium_ports[i]), '--timesteps', str(timesteps), '--iterations', str(iterations),
                '--udid', str(udids[i]), '--android_port', str(android_ports[i]), '--device_name', device_names[i],
-               '--app_path', app_paths[i], '--max_timesteps', str(max_timesteps), '--pool_strings', pool_strings,
-               '--timer', str(timer), '--platform_version', android_v, '--trials_per_app', str(trials_per_app)]
+               '--apps', f'{app_lists[i]}', '--max_timesteps', str(max_timesteps), '--pool_strings', pool_strings,
+               '--timer', str(timer), '--platform_version', android_v, '--trials_per_app', str(trials_per_app),
+               '--menu']
         if emu is not None:
             cmd = cmd + ['--emu', emu]
         if instr:

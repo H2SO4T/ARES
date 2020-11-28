@@ -13,6 +13,8 @@ rl_interaction/logger.log
 rl_interaction/tested_apps
 rl_interaction/instrumented_apps
 rl_interaction/.DS_Store
+rl_interaction/apps copia/
+rl_interaction/logs copia/
 .DS_Store
 .old
 

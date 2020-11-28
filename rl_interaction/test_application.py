@@ -48,6 +48,7 @@ def main():
     parser.add_argument('--real_device', default=False, action='store_true')
     parser.add_argument('--rotation', default=False, action='store_true')
     parser.add_argument('--internet', default=False, action='store_true')
+    parser.add_argument('--menu', default=False, action='store_true')
     parser.add_argument('--algo', choices=['TD3', 'SAC', 'random', 'Q', 'DDPG', 'test'], type=str, required=True)
     parser.add_argument('--emu', choices=['normal', 'headless'], type=str, required=False, default='normal')
     parser.add_argument('--appium_port', type=int, required=True)
@@ -56,7 +57,7 @@ def main():
     parser.add_argument('--udid', type=str, default='emulator-5554')
     parser.add_argument('--device_name', type=str, default='test0')
     parser.add_argument('--android_port', type=str, default='5554')
-    parser.add_argument('--app_path', type=str, default='apps')
+    parser.add_argument('--apps', type=str, required=True)
     parser.add_argument('--timer', type=int, default=60)
     parser.add_argument('--max_timesteps', type=int, default=250)
     parser.add_argument('--pool_strings', type=str, default='strings.txt')
@@ -65,7 +66,7 @@ def main():
     args = parser.parse_args()
     max_trials = args.trials_per_app
     if max_trials <= 0:
-        raise Exception('Are U Kidding Me ? -.- max_trials must be > 0')
+        raise Exception('Are U Kidding Me ? max_trials must be > 0')
     timesteps = args.timesteps
     max_timesteps = args.max_timesteps
     pool_strings = args.pool_strings
@@ -82,8 +83,9 @@ def main():
     device_name = args.device_name.replace('_', ' ')
     rotation = args.rotation
     internet = args.internet
+    merdoso_button_menu = args.menu
     android_port = args.android_port
-    app_path = args.app_path
+    apps = [p for p in args.apps.split(",")]
     timer = args.timer
 
     if emu == 'normal':
@@ -93,7 +95,7 @@ def main():
 
     # Put all APKs in folder apps
 
-    path = os.path.join(os.getcwd(), app_path)
+    # path = os.path.join(os.getcwd(), app_path)
     my_log = logger.add(os.path.join('logs', 'logger.log'), format="{time} {level} {message}",
                         filter=lambda record: record["level"].name == "INFO" or "ERROR")
 
@@ -102,10 +104,8 @@ def main():
         emulator = None
     else:
         emulator = EmulatorLauncher(emu, device_name, android_port)
-        time.sleep(3.5)
 
-    # Listing all APKs in folder apps
-    apps = glob.glob(path + os.sep + '*.apk')
+    ##############################
 
     if len(apps) == 0:
         raise Exception(f'The folder is empty or the path is wrong')
@@ -113,7 +113,8 @@ def main():
     for application in apps:
         app_name = os.path.basename(os.path.splitext(application)[0])
         logger.info(f'now testing: {app_name}\n')
-        cycle = 0
+        # MODIFICA QUIIIIIIII
+        cycle = 1
         trial = 0
         string_activities = ''
         coverage_dict_template = {}
@@ -121,7 +122,8 @@ def main():
             a = apk.APK(application)
             androguard_activities = a.get_activities()
             for activity in androguard_activities:
-                string_activities += activity + ','
+                activity = activity.replace("..", ".")
+                string_activities += f'{activity} ,'
                 coverage_dict_template.update({activity: {'visited': False}})
             ready = True
         except Exception as e:
@@ -130,7 +132,8 @@ def main():
 
         if ready:
             package = None
-            while cycle < N:
+            # MODIFICA QUIIIIIIII
+            while cycle < (N+1):
                 logger.info(f'app: {app_name}, test {cycle} of {N} starting')
                 # coverage dir
                 coverage_dir = ''
@@ -148,7 +151,7 @@ def main():
                 clicked_buttons = []
                 number_bugs = []
 
-                os.system(f'adb install {application}')
+                os.system(f'adb -s {udid} install {application}')
                 result = subprocess.run(
                     ["adb", "shell", "su", "0", "find", "/data/data/", "-type", "d", "-name", f'"{a.package}*"'],
                     capture_output=True)
@@ -167,6 +170,7 @@ def main():
                                            appium_port=appium_port,
                                            internet=internet,
                                            instr=instr,
+                                           merdoso_button_menu=merdoso_button_menu,
                                            rotation=rotation,
                                            platform_name=platform_name,
                                            platform_version=platform_version,

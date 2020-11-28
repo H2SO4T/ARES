@@ -69,22 +69,22 @@ class EmulatorLauncher:
             if self.speedup:
                 self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
                                                  '-port', f'{self.android_port}'])
-                time.sleep(18)
+                time.sleep(40)
             else:
                 self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
                                                  '-port', f'{self.android_port}', '-no-snapshot', '-no-boot-anim', '-wipe-data'])
-                time.sleep(30.0)
+                time.sleep(80.0)
         else:
             self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
                                              '-port', f'{self.android_port}', '-no-window', '-no-snapshot', '-no-audio',
                                              '-no-boot-anim', '-wipe-data'])
             # Select the time that your machine needs
-            time.sleep(30.0)
-
+            time.sleep(80.0)
 
     def restart_emulator(self):
         self.terminate()
         self.start_emulator()
+
 
 class Timer:
 
