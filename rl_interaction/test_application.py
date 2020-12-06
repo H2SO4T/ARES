@@ -2,7 +2,6 @@ import argparse
 import logging
 import os
 import warnings
-import glob
 
 warnings.filterwarnings('ignore')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
@@ -14,11 +13,10 @@ from rl_interaction.RandomExploration import RandomAlgorithm
 from rl_interaction.TD3Exploration import TD3Algorithm
 from rl_interaction.TestApp import TestApp
 import pickle
-import time
 from rl_interaction.utils.utils import AppiumLauncher, EmulatorLauncher
 from rl_interaction.RL_application_env import RLApplicationEnv
-from androguard.core.bytecodes import apk
 from selenium.common.exceptions import InvalidSessionIdException, WebDriverException
+from rl_interaction.utils import apk_analyzer
 from loguru import logger
 import subprocess
 
@@ -105,26 +103,18 @@ def main():
     else:
         emulator = EmulatorLauncher(emu, device_name, android_port)
 
-    ##############################
-
     if len(apps) == 0:
         raise Exception(f'The folder is empty or the path is wrong')
         exit()
     for application in apps:
         app_name = os.path.basename(os.path.splitext(application)[0])
         logger.info(f'now testing: {app_name}\n')
-        # MODIFICA QUIIIIIIII
-        cycle = 1
+        cycle = 0
         trial = 0
-        string_activities = ''
         coverage_dict_template = {}
         try:
-            a = apk.APK(application)
-            androguard_activities = a.get_activities()
-            for activity in androguard_activities:
-                activity = activity.replace("..", ".")
-                string_activities += f'{activity} ,'
-                coverage_dict_template.update({activity: {'visited': False}})
+            exported_activities, services, receivers, providers, string_activities, my_package = apk_analyzer.analyze(application,
+                                                                                                 coverage_dict_template)
             ready = True
         except Exception as e:
             logger.error(f'{e} at app: {application}')
@@ -132,8 +122,7 @@ def main():
 
         if ready:
             package = None
-            # MODIFICA QUIIIIIIII
-            while cycle < (N+1):
+            while cycle < N:
                 logger.info(f'app: {app_name}, test {cycle} of {N} starting')
                 # coverage dir
                 coverage_dir = ''
@@ -151,9 +140,9 @@ def main():
                 clicked_buttons = []
                 number_bugs = []
 
-                os.system(f'adb -s {udid} install {application}')
+                os.system(f'adb -s {udid} install -t -r {application}')
                 result = subprocess.run(
-                    ["adb", "shell", "su", "0", "find", "/data/data/", "-type", "d", "-name", f'"{a.package}*"'],
+                    ["adb", "shell", "su", "0", "find", "/data/data/", "-type", "d", "-name", f'"{my_package}*"'],
                     capture_output=True)
                 package = result.stdout.decode('utf-8').strip('\n').rsplit('/')[-1]
 
@@ -179,7 +168,8 @@ def main():
                                            device_name=device_name,
                                            max_episode_len=max_timesteps,
                                            is_headless=is_headless, appium=appium, emulator=emulator,
-                                           package=package)
+                                           package=package, exported_activities=exported_activities,
+                                           services=services, receivers=receivers)
                     if algo == 'TD3':
                         algorithm = TD3Algorithm()
                     elif algo == 'random':

@@ -19,5 +19,6 @@ class DDPGAlgorithm(ExplorationAlgorithm):
             return True
         except Exception:
             appium.restart_appium()
-            emulator.restart_emulator()
+            if emulator is not None:
+                emulator.restart_emulator()
             return False

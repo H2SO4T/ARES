@@ -1,9 +1,5 @@
 import re
-from threading import Thread
-
-from appium.webdriver.extensions.android.gsm import GsmCallActions
 from gym import Env
-
 import os
 import numpy
 import time
@@ -18,6 +14,7 @@ from appium.webdriver.common.touch_action import TouchAction
 from rl_interaction.utils.utils import Utils
 from multiprocessing import Process, Queue
 from appium import webdriver
+from collections import deque
 
 
 def search_package_and_setprop(folder):
@@ -57,7 +54,7 @@ class RLApplicationEnv(Env):
     def __init__(self, coverage_dict, app_path, list_activities,
                  widget_list, bug_set, coverage_dir, log_dir, rotation, internet, merdoso_button_menu, platform_name,
                  platform_version, udid,
-                 device_name,
+                 device_name, exported_activities, services, receivers,
                  is_headless, appium, emulator, package, pool_strings, visited_activities: list, clicked_buttons: list,
                  number_bugs: list, appium_port, max_episode_len=250, string_activities='',
                  instr=False, OBSERVATION_SPACE=2000, ACTION_SPACE=30):
@@ -67,6 +64,7 @@ class RLApplicationEnv(Env):
         self.instr = instr
         self.emulator = emulator
         self.appium = appium
+        self.exported_activities = deque(exported_activities)
         self.coverage_dir = coverage_dir
         self.log_dir = log_dir
         self.app_path = app_path
@@ -74,11 +72,14 @@ class RLApplicationEnv(Env):
         self.rotation = rotation
         self.internet = internet
         self.merdoso_button_menu = merdoso_button_menu
+        self.intents = services + receivers
+        self.intent_flag = bool(len(self.intents))
 
-        self.shift = self.internet + self.rotation + self.merdoso_button_menu
-        self.action_internet = int(self.internet) - 1
-        self.action_rotation = self.internet + self.rotation - 1
-        self.action_menu = self.internet + self.rotation + self.merdoso_button_menu - 1
+        self.shift = self.internet + self.rotation + self.merdoso_button_menu + self.intent_flag
+        self.modify_internet_connection = int(self.internet) - 1
+        self.do_rotation = self.internet + self.rotation - 1
+        self.click_menu_button = self.internet + self.rotation + self.merdoso_button_menu - 1
+        self.intent_action = self.internet + self.rotation + self.merdoso_button_menu + self.intent_flag - 1
 
         self.jacoco_package = package
         self.visited_activities = visited_activities
@@ -128,6 +129,7 @@ class RLApplicationEnv(Env):
                              'isHeadless': is_headless,
                              'automationName': automation_name,
                              'adbExecTimeout': 30000,
+                             'appActivity': self.exported_activities[0],
                              'appWaitActivity': string_activities,
                              'newCommandTimeout': 200}
 
@@ -150,12 +152,12 @@ class RLApplicationEnv(Env):
         with open(pool_strings, 'r+') as f:
             self.strings = f.read().split('\n')
         self.bug_proc_pid = self.start_bug_handler()
-
         # Defining Gym Spaces
         self.action_space = spaces.Box(low=numpy.array([0, 0, 0]),
                                        high=numpy.array([self.ACTION_SPACE, len(self.strings) - 1, 1]),
                                        dtype=numpy.int64)
         self.observation_space = spaces.Box(low=0, high=1, shape=(self.OBSERVATION_SPACE,), dtype=numpy.int32)
+        self.dims = self.driver.get_window_size()
         self.check_activity()
 
     @logger.catch()
@@ -181,30 +183,41 @@ class RLApplicationEnv(Env):
 
     def step2(self, action_number):
         # We do a system action
-        if self.internet and (action_number[0] == self.action_internet):
+        if self.internet and (action_number[0] == self.modify_internet_connection):
             logger.debug('set connection to ' + str(self.connection))
             self.connection_action()
         # We do a system action
-        elif self.rotation and (action_number[0] == self.action_rotation):
+        elif self.rotation and (action_number[0] == self.do_rotation):
             logger.debug('set orientation, original was ' + self.driver.orientation)
             self.orientation()
             time.sleep(0.2)
-        elif self.merdoso_button_menu and (action_number[0] == self.action_menu):
+            try:
+                self.dims = self.driver.get_window_size()
+            except:
+                pass
+        elif self.merdoso_button_menu and (action_number[0] == self.click_menu_button):
             logger.debug('pressed menu button')
             self.driver.press_keycode(82)
+        elif self.intent_flag and (action_number[0] == self.intent_action):
+            mod = action_number[1] % len(self.intents)
+            self.generate_intent(mod)
         else:
             action_number[0] = action_number[0] - self.shift
-            current_view = self.views[action_number[0]]
+            if len(self.views) == 0:
+                self.perform_touch_action(action_number)
+                time.sleep(0.05)
+            else:
+                current_view = self.views[action_number[0]]
 
-            identifier = current_view['identifier']
-            self.update_button_in_coverage_dict(identifier)
+                identifier = current_view['identifier']
+                self.update_button_in_coverage_dict(identifier)
 
-            # We save the action in queue
-            logger.debug(f'action: {identifier} Activity: {self.current_activity}')
+                # We save the action in queue
+                logger.debug(f'action: {identifier} Activity: {self.current_activity}')
 
-            # Do Action
-            self.action(current_view, action_number)
-            time.sleep(0.2)
+                # Do Action
+                self.action(current_view, action_number)
+                time.sleep(0.2)
         self.bug, self.outside = self.check_activity()
         if self.outside:
             self.outside = False
@@ -276,24 +289,25 @@ class RLApplicationEnv(Env):
                 return MAX_REWARD
             else:
                 return 0.0
-        # TODO inserisci il set
-        # elif abs(set0.diff(set1)) >= 2:
-        #    return 10
         else:
             return -1.0
 
     def reset(self):
-        logger.debug('---EPISODE RESET---')
+        logger.debug('<--- EPISODE RESET --->')
         self._md5 = ''
         self.timesteps = 0
-        '''
-        if self.instr:
-            self.collect_coverage()
-        '''
         try:
-            self.driver.reset()
-            time.sleep(0.5)
-
+            if len(self.exported_activities) > 1:
+                try:
+                    self.driver.quit()
+                    time.sleep(0.1)
+                except:
+                    pass
+                self.desired_caps['appActivity'] = self.exported_activities[0]
+                self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
+                self.exported_activities.rotate(1)
+            else:
+                self.driver.reset()
         except InvalidSessionIdException as e:
             logger.critical(e)
             self.manager(e)
@@ -308,17 +322,8 @@ class RLApplicationEnv(Env):
         self.get_observation()
         return self.observation
 
-    def collect_coverage(self):
-        os.system(f'adb -s {self.udid} shell am broadcast -p {self.package} -a intent.END_COVERAGE')
-        time.sleep(0.5)
-        os.system(f'adb -s {self.udid} pull /sdcard/Android/data/{self.package}/files/coverage.ec '
-                  f'{os.path.join(".", self.coverage_dir, str(self.coverage_count))}.ec')
-        self.coverage_count += 1
-        time.sleep(0.3)
-
     def get_observation(self):
         if self.bug:
-            # TODO
             self.observation = numpy.array([0] * self.OBSERVATION_SPACE)
         else:
             observation_0 = self.one_hot_encoding_activities()
@@ -366,9 +371,6 @@ class RLApplicationEnv(Env):
 
         # Updating buttons
         self.update_views()
-        if len(self.views.keys()) == 0:
-            self.driver.back()
-            self.update_views()
         return False, False
 
     def update_views(self):
@@ -385,7 +387,10 @@ class RLApplicationEnv(Env):
                     self.manager(e)
             except WebDriverException as e:
                 self.manager(e)
-        self.action_space.high[0] = len(self.views) + self.shift
+        if len(self.views) == 0:
+            self.action_space.high[0] = self.ACTION_SPACE
+        else:
+            self.action_space.high[0] = len(self.views) + self.shift
 
     def get_all_views(self):
         # Searching for clickable elements in XML/HTML source page
@@ -534,3 +539,23 @@ class RLApplicationEnv(Env):
                 if activity.endswith(actual_activity):
                     return activity
         return None
+
+    def perform_touch_action(self, action):
+        try:
+            act = TouchAction(self.driver)
+            x = (self.dims['width'] - 1) * action[0] / (self.ACTION_SPACE - self.shift)
+            y = (self.dims['height'] - 1) * action[1] / (len(self.strings) - 1)
+            act.tap(x=x, y=y).perform()
+            logger.debug(f'action: Touch Action at coordinates:{int(x)}, {int(y)} Activity: {self.current_activity}')
+        except Exception:
+            pass
+
+    def generate_intent(self, num):
+        if self.intents[num]['type'] == 'service':
+            os.system(f'adb -s {self.udid} shell am su 0 startservice -n "{self.package}/{self.intents[num]["name"]}" '
+                      f'-a "{self.intents[num]["action"][0]}"')
+        else:
+            os.system(f'adb -s {self.udid} shell su 0 am broadcast -n "{self.package}/{self.intents[num]["name"]}" '
+                      f'-a "{self.intents[num]["action"][0]}"')
+        # if there is more than one action
+        self.intents[num]["action"].rotate(1)
