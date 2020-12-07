@@ -19,7 +19,8 @@ def main():
     # list of emulators
     parser.add_argument('--list_devices', help='delimited list input', type=str, required=True)
     # put --instr flag in case you want to collect code coverage
-    parser.add_argument('--instr', default=False, action='store_true')
+    parser.add_argument('--instr_jacoco', default=False, action='store_true')
+    parser.add_argument('--instr_emma', default=False, action='store_true')
     # activate this flag in case you want to run ARES on real devices
     parser.add_argument('--real_device', default=False, action='store_true')
     parser.add_argument('--appium_ports', help='delimited list input', type=str, required=True)
@@ -52,7 +53,10 @@ def main():
     args = parser.parse_args()
     algo = args.algo
     trials_per_app = args.trials_per_app
-    instr = args.instr
+    instr_jacoco = args.instr_jacoco
+    instr_emma = args.instr_emma
+    if instr_emma and instr_jacoco:
+        raise AssertionError
     rot = args.rotation
     internet = args.internet
     real_device = args.real_device
@@ -99,8 +103,10 @@ def main():
                '--menu']
         if emu is not None:
             cmd = cmd + ['--emu', emu]
-        if instr:
-            cmd.append('--instr')
+        if instr_jacoco:
+            cmd.append('--instr_jacoco')
+        if instr_emma:
+            cmd.append('--instr_emma')
         if rot:
             cmd.append('--rotation')
         if internet:

@@ -42,7 +42,8 @@ def main():
                                                  'to choose random approach')
     parser.add_argument('--timesteps', type=int, default=3600)
     parser.add_argument('--iterations', type=int, default=10)
-    parser.add_argument('--instr', default=False, action='store_true')
+    parser.add_argument('--instr_jacoco', default=False, action='store_true')
+    parser.add_argument('--instr_emma', default=False, action='store_true')
     parser.add_argument('--real_device', default=False, action='store_true')
     parser.add_argument('--rotation', default=False, action='store_true')
     parser.add_argument('--internet', default=False, action='store_true')
@@ -69,7 +70,10 @@ def main():
     max_timesteps = args.max_timesteps
     pool_strings = args.pool_strings
     N = args.iterations
-    instr = args.instr
+    instr_jacoco = args.instr_jacoco
+    instr_emma = args.instr_emma
+    if instr_emma and instr_jacoco:
+        raise AssertionError
     real_device = args.real_device
     algo = args.algo
     emu = args.emu
@@ -126,7 +130,7 @@ def main():
                 logger.info(f'app: {app_name}, test {cycle} of {N} starting')
                 # coverage dir
                 coverage_dir = ''
-                if instr:
+                if instr_emma or instr_jacoco:
                     coverage_dir = os.path.join(os.getcwd(), 'coverage', app_name, algo, str(cycle))
                     os.makedirs(coverage_dir, exist_ok=True)
                 # logs dir
@@ -158,7 +162,8 @@ def main():
                                            string_activities=string_activities,
                                            appium_port=appium_port,
                                            internet=internet,
-                                           instr=instr,
+                                           instr_emma=instr_emma,
+                                           instr_jacoco=instr_jacoco,
                                            merdoso_button_menu=merdoso_button_menu,
                                            rotation=rotation,
                                            platform_name=platform_name,

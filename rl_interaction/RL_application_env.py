@@ -28,6 +28,15 @@ def search_package_and_setprop(folder):
     os.popen(command).read()
 
 
+def collect_coverage_emma(udid, package, coverage_dir, coverage_count):
+    os.system(f'adb -s {udid} shell am broadcast -p {package}  -a edu.gatech.m3.emma.COLLECT_COVERAGE')
+    os.system(f'adb -s {udid} pull /mnt/sdcard/coverage.ec {os.path.join(".", coverage_dir, str(coverage_count))}.ec')
+
+def collect_coverage_jacoco(udid, package, coverage_dir, coverage_count):
+    os.system(f'adb -s {udid} shell am broadcast -p {package} -a intent.END_COVERAGE')
+    os.system(f'adb -s {udid} pull /sdcard/Android/data/{package}/files/coverage.ec '
+             f'{os.path.join(".", coverage_dir, str(coverage_count))}.ec')
+
 def bug_handler(bug_queue, udid):
     os.system(f'adb -s {udid} logcat -c')
     proc = subprocess.Popen(['adb', '-s', udid, 'logcat'], stdout=subprocess.PIPE)
@@ -53,7 +62,7 @@ class RLApplicationEnv(Env):
 
     def __init__(self, coverage_dict, app_path, list_activities,
                  widget_list, bug_set, coverage_dir, log_dir, rotation, internet, merdoso_button_menu, platform_name,
-                 platform_version, udid,
+                 platform_version, udid, instr_emma, instr_jacoco,
                  device_name, exported_activities, services, receivers,
                  is_headless, appium, emulator, package, pool_strings, visited_activities: list, clicked_buttons: list,
                  number_bugs: list, appium_port, max_episode_len=250, string_activities='',
@@ -69,6 +78,13 @@ class RLApplicationEnv(Env):
         self.log_dir = log_dir
         self.app_path = app_path
         self.appium_port = appium_port
+        if instr_emma:
+            self.instr = True
+            self.instr_funct = collect_coverage_emma
+        elif instr_jacoco:
+            self.instr = True
+            self.instr_funct = collect_coverage_jacoco
+
         self.rotation = rotation
         self.internet = internet
         self.merdoso_button_menu = merdoso_button_menu

@@ -44,7 +44,8 @@ def find_exported_components(apk):
                 for intent in item.findall("./intent-filter"):
                     for action in intent.findall("./action"):
                         my_action = action.get(apk._ns("name"), "")
-                        if my_action != 'edu.gatech.m3.emma.COLLECT_COVERAGE':
+                        if (my_action != 'edu.gatech.m3.emma.COLLECT_COVERAGE') or ('END_EMMA' not in
+                                                                                    my_action):
                             actions.append(my_action)
                             has_actions_in_intent_filter = True
 

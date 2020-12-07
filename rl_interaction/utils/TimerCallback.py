@@ -6,14 +6,6 @@ from rl_interaction.utils.utils import Timer
 from loguru import logger
 
 
-def collect_coverage(udid, package, coverage_dir, coverage_count):
-    os.system(f'adb -s {udid} shell am broadcast -a edu.gatech.m3.emma.COLLECT_COVERAGE')
-    # os.system(f'adb  shell am broadcast -p {package} -a intent.END_COVERAGE')
-    os.system(f'adb -s {udid} pull /mnt/sdcard/coverage.ec {os.path.join(".", coverage_dir, str(coverage_count))}.ec')
-    # os.system(f'adb -s {udid} pull /sdcard/Android/data/{package}/files/coverage.ec '
-    #         f'{os.path.join(".", coverage_dir, str(coverage_count))}.ec')
-
-
 class TimerCallback(BaseCallback):
     def __init__(self, timer, app, verbose=0):
         super(TimerCallback, self).__init__(verbose)
@@ -63,14 +55,14 @@ class TimerCallback(BaseCallback):
         if self.timer.timer_expired():
             logger.info(f'Timer expired at {self.num_timesteps}')
             self.app.coverage_count += 1
-            collect_coverage(udid=self.app.udid, package=self.app.package, coverage_dir=self.app.coverage_dir,
-                             coverage_count=self.app.coverage_count)
+            self.app.instr_funct(udid=self.app.udid, package=self.app.package, coverage_dir=self.app.coverage_dir,
+                           coverage_count=self.app.coverage_count)
             return False
         elif self.app.instr:
             if (self.num_timesteps % 25) == 0:
                 self.app.coverage_count += 1
-                collect_coverage(udid=self.app.udid, package=self.app.package, coverage_dir=self.app.coverage_dir,
-                                 coverage_count=self.app.coverage_count)
+                self.app.instr_funct(udid=self.app.udid, package=self.app.package, coverage_dir=self.app.coverage_dir,
+                               coverage_count=self.app.coverage_count)
                 return True
         else:
             return True
