@@ -568,7 +568,7 @@ class RLApplicationEnv(Env):
 
     def generate_intent(self, num):
         if self.intents[num]['type'] == 'service':
-            os.system(f'adb -s {self.udid} shell am su 0 startservice -n "{self.package}/{self.intents[num]["name"]}" '
+            os.system(f'adb -s {self.udid} shell su 0 am startservice -n "{self.package}/{self.intents[num]["name"]}" '
                       f'-a "{self.intents[num]["action"][0]}"')
         else:
             os.system(f'adb -s {self.udid} shell su 0 am broadcast -n "{self.package}/{self.intents[num]["name"]}" '
