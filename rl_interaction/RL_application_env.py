@@ -32,10 +32,12 @@ def collect_coverage_emma(udid, package, coverage_dir, coverage_count):
     os.system(f'adb -s {udid} shell am broadcast -p {package}  -a edu.gatech.m3.emma.COLLECT_COVERAGE')
     os.system(f'adb -s {udid} pull /mnt/sdcard/coverage.ec {os.path.join(".", coverage_dir, str(coverage_count))}.ec')
 
+
 def collect_coverage_jacoco(udid, package, coverage_dir, coverage_count):
     os.system(f'adb -s {udid} shell am broadcast -p {package} -a intent.END_COVERAGE')
     os.system(f'adb -s {udid} pull /sdcard/Android/data/{package}/files/coverage.ec '
-             f'{os.path.join(".", coverage_dir, str(coverage_count))}.ec')
+              f'{os.path.join(".", coverage_dir, str(coverage_count))}.ec')
+
 
 def bug_handler(bug_queue, udid):
     os.system(f'adb -s {udid} logcat -c')
@@ -145,7 +147,6 @@ class RLApplicationEnv(Env):
                              'isHeadless': is_headless,
                              'automationName': automation_name,
                              'adbExecTimeout': 30000,
-                             'appActivity': self.exported_activities[0],
                              'appWaitActivity': string_activities,
                              'newCommandTimeout': 200}
 
@@ -312,25 +313,37 @@ class RLApplicationEnv(Env):
         logger.debug('<--- EPISODE RESET --->')
         self._md5 = ''
         self.timesteps = 0
-        try:
-            if len(self.exported_activities) > 1:
+        '''
+        if len(self.exported_activities) > 1:
+            try:
+                self.driver.quit()
+                time.sleep(0.1)
+            except:
+                pass
+            i = 0
+            while True:
                 try:
-                    self.driver.quit()
-                    time.sleep(0.1)
-                except:
-                    pass
-                self.desired_caps['appActivity'] = self.exported_activities[0]
-                self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
-                self.exported_activities.rotate(1)
-            else:
-                self.driver.reset()
-        except InvalidSessionIdException as e:
+                    self.desired_caps['appActivity'] = self.exported_activities[0]
+                    self.exported_activities.rotate(1)
+                    self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
+                    break
+                except Exception as e:
+                    i += 1
+                    if i <= len(self.exported_activities):
+                        try:
+                            self.driver.quit()
+                        except:
+                            pass
+                    else:
+                        logger.critical(e)
+                        self.manager(e)
+        else:
+        '''
+        try:
+            self.driver.reset()
+        except Exception as e:
             logger.critical(e)
             self.manager(e)
-        except WebDriverException as e:
-            logger.critical(e)
-            self.manager(e)
-
         self.current_activity = self.rename_activity(self.driver.current_activity)
         self.old_activity = self.current_activity
         self.set_activities_episode = {self.current_activity}
@@ -485,9 +498,12 @@ class RLApplicationEnv(Env):
             except WebDriverException:
                 pass
             self.appium.restart_appium()
-            # if self.emulator is not None:
-            self.emulator.restart_emulator()
-            self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
+            try:
+                self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
+            except Exception:
+                if self.emulator is not None:
+                    self.emulator.restart_emulator()
+                self.driver = webdriver.Remote(f'http://127.0.0.1:{self.appium_port}/wd/hub', self.desired_caps)
             time.sleep(5)
             return self.observation, numpy.array([0.0]), numpy.array(True), {}
 
@@ -567,11 +583,22 @@ class RLApplicationEnv(Env):
             pass
 
     def generate_intent(self, num):
-        if self.intents[num]['type'] == 'service':
-            os.system(f'adb -s {self.udid} shell su 0 am startservice -n "{self.package}/{self.intents[num]["name"]}" '
-                      f'-a "{self.intents[num]["action"][0]}"')
+        if len(self.intents[num]["action"]) > 0:
+            if self.intents[num]['type'] == 'service':
+                command_string = f'adb -s {self.udid} shell su 0 am startservice -n ' \
+                                 f'"{self.package}/{self.intents[num]["name"]}" -a "{self.intents[num]["action"][0]}"'
+            else:
+                command_string = f'adb -s {self.udid} shell su 0 am broadcast -n ' \
+                                 f'"{self.package}/{self.intents[num]["name"]}" -a "{self.intents[num]["action"][0]}"'
+            # in case there is more than one action
+            self.intents[num]["action"].rotate(1)
         else:
-            os.system(f'adb -s {self.udid} shell su 0 am broadcast -n "{self.package}/{self.intents[num]["name"]}" '
-                      f'-a "{self.intents[num]["action"][0]}"')
-        # if there is more than one action
-        self.intents[num]["action"].rotate(1)
+            if self.intents[num]['type'] == 'service':
+                command_string = f'adb -s {self.udid} shell su 0 am startservice -n ' \
+                                 f'"{self.package}/{self.intents[num]["name"]}"'
+            else:
+                command_string = f'adb -s {self.udid} shell su 0 am broadcast ' \
+                                 f'-n "{self.package}/{self.intents[num]["name"]}"'
+        if self.emulator is None:
+            command_string = command_string.replace('su 0', '')
+        os.system(command_string)
