@@ -1,4 +1,4 @@
-from rl_interaction.ExplorationAlgorithm import ExplorationAlgorithm
+from rl_interaction.algorithms.ExplorationAlgorithm import ExplorationAlgorithm
 
 
 class TestApp(ExplorationAlgorithm):

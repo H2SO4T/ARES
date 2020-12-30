@@ -1,5 +1,4 @@
-import time
-from rl_interaction.ExplorationAlgorithm import ExplorationAlgorithm
+from rl_interaction.algorithms.ExplorationAlgorithm import ExplorationAlgorithm
 from rl_interaction.utils.utils import Timer
 from rl_interaction.utils.q import Q
 

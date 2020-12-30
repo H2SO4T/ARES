@@ -1,7 +1,6 @@
-import time
 from stable_baselines import TD3
 from stable_baselines.td3.policies import MlpPolicy
-from rl_interaction.ExplorationAlgorithm import ExplorationAlgorithm
+from rl_interaction.algorithms.ExplorationAlgorithm import ExplorationAlgorithm
 from rl_interaction.utils.TimerCallback import TimerCallback
 from rl_interaction.utils.wrapper import TimeFeatureWrapper
 

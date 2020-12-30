@@ -6,12 +6,12 @@ import warnings
 warnings.filterwarnings('ignore')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
 logging.getLogger('tensorflow').setLevel(logging.FATAL)
-from rl_interaction.DDPGExploration import DDPGAlgorithm
-from rl_interaction.QLearnExploration import QLearnAlgorithm
-from rl_interaction.SACExploration import SACAlgorithm
-from rl_interaction.RandomExploration import RandomAlgorithm
-from rl_interaction.TD3Exploration import TD3Algorithm
-from rl_interaction.TestApp import TestApp
+from rl_interaction.algorithms.DDPGExploration import DDPGAlgorithm
+from rl_interaction.algorithms.QLearnExploration import QLearnAlgorithm
+from rl_interaction.algorithms.SACExploration import SACAlgorithm
+from rl_interaction.algorithms.RandomExploration import RandomAlgorithm
+from rl_interaction.algorithms.TD3Exploration import TD3Algorithm
+from rl_interaction.algorithms.TestApp import TestApp
 import pickle
 from rl_interaction.utils.utils import AppiumLauncher, EmulatorLauncher
 from rl_interaction.RL_application_env import RLApplicationEnv
@@ -35,6 +35,7 @@ def save_pickles(algo, app_name, cycle, button_list, activities, bugs, bug_set):
 
     with open(os.path.join('pickle_files', f'{prefix}_bug_names_{cycle}.pkl'), 'wb') as file:
         pickle.dump(bug_set, file)
+
 
 def main():
     # Launching appium
@@ -117,8 +118,9 @@ def main():
         trial = 0
         coverage_dict_template = {}
         try:
-            exported_activities, services, receivers, providers, string_activities, my_package = apk_analyzer.analyze(application,
-                                                                                                 coverage_dict_template)
+            exported_activities, services, receivers, providers, string_activities, my_package = apk_analyzer.analyze(
+                application,
+                coverage_dict_template)
             ready = True
         except Exception as e:
             logger.error(f'{e} at app: {application}')
