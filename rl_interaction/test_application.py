@@ -45,6 +45,7 @@ def main():
     parser.add_argument('--iterations', type=int, default=10)
     parser.add_argument('--instr_jacoco', default=False, action='store_true')
     parser.add_argument('--instr_emma', default=False, action='store_true')
+    parser.add_argument('--save_policy', default=False, action='store_true')
     parser.add_argument('--real_device', default=False, action='store_true')
     parser.add_argument('--rotation', default=False, action='store_true')
     parser.add_argument('--internet', default=False, action='store_true')
@@ -64,9 +65,10 @@ def main():
     parser.add_argument('--trials_per_app', type=int, default=3)
 
     args = parser.parse_args()
+    save_policy = args.save_policy
     max_trials = args.trials_per_app
     if max_trials <= 0:
-        raise Exception('Are U Kidding Me ? max_trials must be > 0')
+        raise Exception('max_trials must be > 0')
     timesteps = args.timesteps
     max_timesteps = args.max_timesteps
     pool_strings = args.pool_strings
@@ -125,7 +127,6 @@ def main():
         except Exception as e:
             logger.error(f'{e} at app: {application}')
             ready = False
-
         if ready:
             package = None
             while cycle < N:
@@ -138,6 +139,8 @@ def main():
                 # logs dir
                 log_dir = os.path.join(os.getcwd(), 'logs', app_name, algo, str(cycle))
                 os.makedirs(log_dir, exist_ok=True)
+                policy_dir = os.path.join(os.getcwd(), 'policies', app_name, algo)
+                os.makedirs(policy_dir, exist_ok=True)
                 # instantiating timer in minutes
                 coverage_dict = dict(coverage_dict_template)
                 widget_list = []
@@ -189,7 +192,7 @@ def main():
                         algorithm = DDPGAlgorithm()
                     elif algo == 'test':
                         algorithm = TestApp()
-                    flag = algorithm.explore(app, emulator, appium, timesteps, timer)
+                    flag = algorithm.explore(app, emulator, appium, timesteps, timer, save_policy, policy_dir, cycle)
                     if flag:
                         with open(f'logs{os.sep}success.log', 'a+') as f:
                             f.write(f'{app_name}\n')
