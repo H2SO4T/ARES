@@ -17,4 +17,4 @@ rl_interaction/apps copia/
 rl_interaction/logs copia/
 .DS_Store
 .old
-
+rl_interaction/coverage copia/
