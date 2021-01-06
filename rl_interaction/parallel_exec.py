@@ -50,7 +50,7 @@ def main():
     parser.add_argument('--max_timesteps', type=int, default=250)
     # file of strings.txt (one string per line)
     parser.add_argument('--pool_strings', type=str, default='strings.txt')
-    parser.add_argument('--trials_per_app', type=str, default=1)
+    parser.add_argument('--trials_per_app', type=str, default=3)
 
     args = parser.parse_args()
     algo = args.algo
