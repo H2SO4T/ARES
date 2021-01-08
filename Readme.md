@@ -89,7 +89,7 @@ Flag `--real_device` is required.
 * `--timer: [time_in_minutes]`, you can specify the time to test the app, required=True.
 * `--platform_version [android_version]`, you have to specify the android version, default = 10.0 . 
 * `--iterations [number_of_iterations]`, how many times you want to repeat the test, default=10 .
-* `--algo [algo]`, choose one between TD3, SAC, DDPG, random, Q-Learning.
+* `--algo [algo]`, choose one between TD3, SAC, DDPG, random, Q-Learning (we strongly suggest SAC).
 * `--timesteps`, number of time steps of each testing, (`--timer` has higher priority ), required=True.
 * `--rotation`, If you want to enable rotation.
 * `--internet`, If you want to toggle data during testing.
@@ -123,7 +123,7 @@ To automatically instrument apps from source code, you can use COSMO: https://gi
 We strongly suggest using Android 8.1 (to the best of our knowledge, the most stable).
 Google emulators are not meant to run for multiple days, and they can have unexpected behaviors due to this. 
 ARES integrates many protection systems that save the current session and restart the emulators. However, sometimes the 
-emulators are irremediably broken, and you need to delete and recreate the emulator.
+emulators are irremediably broken, and you need to delete and recreate them.
 
 ### If MPI does not work
 
