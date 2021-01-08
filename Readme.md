@@ -3,7 +3,7 @@
 
 ARES is a black-box tool that uses Deep Reinforcement Learning to test and explore Android applications.
 
-#Publication
+# Publication
 
 More details about **ARES** can be found in the pre-print paper "[Deep Reinforcement Learning for Black-Box Testing of Android Apps](https://arxiv.org/abs/2101.02636)"
 Please use the following bibtex entry to cite our work:
@@ -71,7 +71,7 @@ Read `Available Flags` for more information.
 * Buy one or more Android devices.
 * Activate ADB and usb debug.
 * Run the testing using `parallel_exec.py`:
-`python3 parallel_exec.py --instr_jacoco --real_device --udids "HG*****9 HG*****T" --list_device "lenovo1 levecchio2" 
+`python3 parallel_exec.py --instr_jacoco --real_device --udids "HG*****9 PO********NA" --list_device "lenovo1 levecchio2" 
   --appium_ports "4270 4290" --android_ports "5554 5556" --path "apps" --timer 70 --rotation --internet  
   --platform_version 7.0 --iterations 2 --algo SAC --timesteps 5000 --trials_per_app 3`
 
