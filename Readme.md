@@ -3,15 +3,33 @@
 
 ARES is a black-box tool that uses Deep Reinforcement Learning to test and explore Android applications.
 
+#Publication
+
+More details about **ARES** can be found in the pre-print paper "[Deep Reinforcement Learning for Black-Box Testing of Android Apps](https://arxiv.org/abs/2101.02636)"
+Please use the following bibtex entry to cite our work:
+
+```BibTex
+@misc{romdhana2021deep,
+      title={Deep Reinforcement Learning for Black-Box Testing of Android Apps}, 
+      author={Andrea Romdhana and Alessio Merlo and Mariano Ceccato and Paolo Tonella},
+      year={2021},
+      eprint={2101.02636},
+      archivePrefix={arXiv},
+      primaryClass={cs.SE}
+}
+```
+
+
 # Requirements
 
 * Android emulator or Android smartphone (more stable)
 * MacOS or Ubuntu or Windows
 * python 3.5 to 3.7 (tensorflow limitation)
 
-# Compatible with
+# Compatibility
 
 * Android from 6.0 to 10.0
+* OpenAI Gym 
 
 # Installation and Setup
 
