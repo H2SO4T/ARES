@@ -19,6 +19,8 @@ Please use the following bibtex entry to cite our work:
 }
 ```
 
+# Demo
+![video](docs/ares.gif)
 
 # Requirements
 
