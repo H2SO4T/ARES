@@ -77,7 +77,7 @@ Read `Available Flags` for more information.
 
 With real devices the flag `--list_devices` can contain arbitrary names, while the flag `--udids` must contain 
 the real udids of your devices.
-You can find the udids using the command `adb devices``  
+You can find the udids using the command `adb devices`
 Flag `--real_device` is required.
   
 # Available Flags:
