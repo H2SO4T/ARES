@@ -20,6 +20,7 @@ Please use the following bibtex entry to cite our work:
 ```
 
 # Demo
+
 ![video](docs/ares.gif)
 
 # Requirements
@@ -47,7 +48,7 @@ Please use the following bibtex entry to cite our work:
 
 # Using the testing Tool (Quick Guide)
 
-* Export PYTHONPATH: ``export PYTHONPATH="path/to/ares``
+* Export PYTHONPATH: ``export PYTHONPATH="path/to/ares"``
 * Move yourself to `ares/rl_interaction`
 * Generate a folder for apks, and put the apks inside
 * Activate the venv 
