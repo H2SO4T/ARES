@@ -118,7 +118,7 @@ During the testing phase several files are generated:
 * In a folder named `policies` you will find the policies saved by ARES of your apps.
 
 To automatically instrument apps from source code, you can use COSMO: https://github.com/H2SO4T/COSMO
-
+FATE: https://github.com/H2SO4T/FATE
 
 # Troubleshooting
 
