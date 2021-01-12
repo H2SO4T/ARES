@@ -146,3 +146,7 @@ elif algo == 'DDPG':
 Connection errors usually depend on the emulator, using a real devices can reduce these errors
 * At first try to delete and recreate the emulator
 * If it does not work, try to reinstall the packages `selenium` and `Appium-Python-Client`
+
+# How To Contribute
+
+If you are interested in the project, please feel free to suggest new features!
