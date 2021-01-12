@@ -1,3 +1,6 @@
+[![Android Version](https://img.shields.io/badge/Android-6.0%2B-brightgreen.svg?logo=android&logoColor=white)](https://developer.android.com/)
+[![Python Version](https://img.shields.io/badge/Python-3.5%20%7C%203.6%20%7C%203.7-green.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-AGPL%20&%20Commercial-blue.svg)](https://github.com/H2SO4T/ARES/blob/master/LICENSE.COMMERCIAL)
 
 # ARES
 
