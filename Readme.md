@@ -157,4 +157,4 @@ If you are interested in the project, please feel free to suggest new features!
 # Coming Soon
 
 * Support for higher python versions
-* Possibility of reload an navigation policy previously learned
+* Reload a previously learned navigation policy 
