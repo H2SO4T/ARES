@@ -153,3 +153,8 @@ Connection errors usually depend on the emulator, using a real devices can reduc
 # How To Contribute
 
 If you are interested in the project, please feel free to suggest new features!
+
+# Coming Soon
+
+* Support for higher python versions
+* Possibility of reload an navigation policy previously learned
