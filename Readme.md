@@ -53,7 +53,7 @@ Please use the following bibtex entry to cite our work:
 
 * Export PYTHONPATH: ``export PYTHONPATH="path/to/ares"``
 * Move yourself to `ares/rl_interaction`
-* Generate a folder for apks, and put the apks inside
+* Generate a folder for the apks, and put them inside
 * Activate the venv 
 * Start testing
 
