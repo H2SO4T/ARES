@@ -1,5 +1,5 @@
 [![Android Version](https://img.shields.io/badge/Android-6.0%2B-brightgreen.svg?logo=android&logoColor=white)](https://developer.android.com/)
-[![Python Version](https://img.shields.io/badge/Python-3.5%20%7C%203.6%20%7C%203.7-green.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/Python-3.5%20%7C%203.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-green.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-AGPL%20&%20Commercial-blue.svg)](https://github.com/H2SO4T/ARES/blob/master/LICENSE.COMMERCIAL)
 
 # ARES
@@ -30,7 +30,7 @@ Please use the following bibtex entry to cite our work:
 
 * Android emulator or Android smartphone (more stable)
 * MacOS or Ubuntu or Windows
-* python 3.5 to 3.7 (tensorflow limitation)
+* python 3.5 to 3.9
 
 # Compatibility
 
@@ -46,8 +46,6 @@ Please use the following bibtex entry to cite our work:
 `virtualenv -p python3 venv` and source it `source venv/bin/activate`
 * Go to rl_interaction: `cd rl_interaction`
 * Install the requirements `requirements.txt` using the command `pip3 install -r requirements.txt`
-* In case of errors make sure that `tensorflow` and `stable_baselines` are installed, 
-  you can also check the package `mpi4py` (see Troubleshooting)
 
 # Using the testing Tool (Quick Guide)
 
@@ -95,7 +93,7 @@ Flag `--real_device` is required.
 * `--timer: [time_in_minutes]`, you can specify the time to test the app, required=True.
 * `--platform_version [android_version]`, you have to specify the android version, default = 10.0 . 
 * `--iterations [number_of_iterations]`, how many times you want to repeat the test, default=10 .
-* `--algo [algo]`, choose one between TD3, SAC, DDPG, random, Q-Learning (we strongly suggest SAC).
+* `--algo [algo]`, choose one between SAC random and Q-Learning (SAC is the algorithm used in the paper).
 * `--timesteps`, number of time steps of each testing, (`--timer` has higher priority ), required=True.
 * `--rotation`, If you want to enable rotation.
 * `--internet`, If you want to toggle data during testing.
@@ -132,19 +130,6 @@ Google emulators are not meant to run for multiple days, and they can have unexp
 ARES integrates many protection systems that save the current session and restart the emulators. However, sometimes the 
 emulators are irremediably broken, and you need to delete and recreate them.
 
-### If MPI does not work
-
-ARES works also if MPI does not work, you can comment the references to DDPG from rl_interaction/test_application.py:
-line 9:
-```python
-from rl_interaction.algorithms.DDPGExploration import DDPGAlgorithm
-``` 
-and lines 191-192:
-```python   
-elif algo == 'DDPG':
-    algorithm = DDPGAlgorithm()
-```
-
 ### In case of connection errors:
 Connection errors usually depend on the emulator, using a real devices can reduce these errors
 * At first try to delete and recreate the emulator
@@ -156,5 +141,4 @@ If you are interested in the project, please feel free to suggest new features!
 
 # Coming Soon
 
-* Support for higher python versions
 * Reload a previously learned navigation policy 

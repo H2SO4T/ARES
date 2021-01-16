@@ -18,3 +18,4 @@ rl_interaction/logs copia/
 .DS_Store
 .old
 rl_interaction/coverage copia/
+algorithms/__pycache__/*

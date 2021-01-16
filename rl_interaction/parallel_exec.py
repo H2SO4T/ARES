@@ -5,6 +5,7 @@ import subprocess
 import argparse
 from itertools import zip_longest
 
+
 def close_old_appium_services():
     system = platform.system()
     if system == 'Windows':
@@ -37,7 +38,7 @@ def main():
     # how many times do you want to repeat the test ?
     parser.add_argument('--iterations', type=int, default=10)
     # choose one
-    parser.add_argument('--algo', choices=['TD3', 'SAC', 'random', 'Q', 'DDPG', 'test'], type=str, required=True)
+    parser.add_argument('--algo', choices=['SAC', 'random', 'Q'], type=str, required=True)
     # in case you want to test using timesteps
     parser.add_argument('--timesteps', type=int, required=True)
     # enable if you want to use rotation
@@ -72,8 +73,8 @@ def main():
     android_ports = [int(a_p) for a_p in args.android_ports.split(" ")]
     path = args.path
     apps = glob.glob(f'{path}{os.sep}*.apk')
-    app_lists = [list(i) for i in zip_longest(*[apps[i:i+len(android_ports)]
-                                              for i in range(0, len(apps), len(android_ports))])]
+    app_lists = [list(i) for i in zip_longest(*[apps[i:i + len(android_ports)]
+                                                for i in range(0, len(apps), len(android_ports))])]
     for i in range(len(app_lists)):
         app_lists[i] = ','.join(list(filter(None, app_lists[i])))
     timer = args.timer

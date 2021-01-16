@@ -1,7 +1,7 @@
 import os
 
-from stable_baselines.sac.policies import MlpPolicy
-from stable_baselines import SAC
+from stable_baselines3.sac.policies import MlpPolicy
+from stable_baselines3 import SAC
 from rl_interaction.algorithms.ExplorationAlgorithm import ExplorationAlgorithm
 from rl_interaction.utils.TimerCallback import TimerCallback
 from rl_interaction.utils.wrapper import TimeFeatureWrapper

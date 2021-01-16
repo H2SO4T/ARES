@@ -6,12 +6,12 @@ import warnings
 warnings.filterwarnings('ignore')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
 logging.getLogger('tensorflow').setLevel(logging.FATAL)
-from rl_interaction.algorithms.DDPGExploration import DDPGAlgorithm
+# from rl_interaction.algorithms.DDPGExploration import DDPGAlgorithm
 from rl_interaction.algorithms.QLearnExploration import QLearnAlgorithm
 from rl_interaction.algorithms.SACExploration import SACAlgorithm
 from rl_interaction.algorithms.RandomExploration import RandomAlgorithm
-from rl_interaction.algorithms.TD3Exploration import TD3Algorithm
-from rl_interaction.algorithms.TestApp import TestApp
+# from rl_interaction.algorithms.TD3Exploration import TD3Algorithm
+# from rl_interaction.algorithms.TestApp import TestApp
 import pickle
 from rl_interaction.utils.utils import AppiumLauncher, EmulatorLauncher
 from rl_interaction.RL_application_env import RLApplicationEnv
@@ -50,7 +50,7 @@ def main():
     parser.add_argument('--rotation', default=False, action='store_true')
     parser.add_argument('--internet', default=False, action='store_true')
     parser.add_argument('--menu', default=False, action='store_true')
-    parser.add_argument('--algo', choices=['TD3', 'SAC', 'random', 'Q', 'DDPG', 'test'], type=str, required=True)
+    parser.add_argument('--algo', choices=['SAC', 'random', 'Q'], type=str, required=True)
     parser.add_argument('--emu', choices=['normal', 'headless'], type=str, required=False, default='normal')
     parser.add_argument('--appium_port', type=int, required=True)
     parser.add_argument('--platform_name', choices=['Android', 'iOS'], type=str, default='Android')
