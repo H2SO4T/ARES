@@ -32,6 +32,8 @@ Please use the following bibtex entry to cite our work:
 * MacOS or Ubuntu or Windows
 * python 3.5 to 3.7 (tensorflow limitation)
 
+If you want to use python3.8 or python3.9 use the `branch pytorch-ares`.
+
 # Compatibility
 
 * Android from 6.0 to 10.0
