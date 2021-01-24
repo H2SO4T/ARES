@@ -142,7 +142,8 @@ If you are interested in the project, please feel free to suggest new features!
 
 # Working with Apple Silicon (M1 SoCs)
 
-Using ARES on Apple Silicon is possible, but the configuration is a bit longer. The onfiguration steps are similar, except the Python part.
+Using ARES on Apple Silicon is possible, but the configuration is a bit longer. The configuration steps are identical, except for the Python part.
+
 We have tested this procedure on a Mac Mini 16Gb, Python3.9 and a real device.
 
 ## Install Miniconda and Setup
