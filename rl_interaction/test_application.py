@@ -192,7 +192,8 @@ def main():
                         algorithm = DDPGAlgorithm()
                     elif algo == 'test':
                         algorithm = TestApp()
-                    flag = algorithm.explore(app, emulator, appium, timesteps, timer, save_policy, policy_dir, cycle)
+                    flag = algorithm.explore(app, emulator, appium, timesteps, timer, save_policy=save_policy,
+                                             policy_dir=policy_dir, cycle=cycle)
                     if flag:
                         with open(f'logs{os.sep}success.log', 'a+') as f:
                             f.write(f'{app_name}\n')

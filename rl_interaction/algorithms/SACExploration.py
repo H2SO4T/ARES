@@ -10,8 +10,8 @@ from rl_interaction.utils.wrapper import TimeFeatureWrapper
 class SACAlgorithm(ExplorationAlgorithm):
 
     @staticmethod
-    def explore(app, emulator, appium, timesteps, timer, save_policy,
-                policy_dir, cycle, train_freq=5, target_update_interval=10):
+    def explore(app, emulator, appium, timesteps, timer, save_policy=False,
+                policy_dir='.', cycle=0, train_freq=5, target_update_interval=10):
         try:
             env = TimeFeatureWrapper(app)
             model = SAC(MlpPolicy, env, verbose=1, train_freq=train_freq, target_update_interval=target_update_interval)

@@ -6,5 +6,5 @@ class ExplorationAlgorithm:
 
     @staticmethod
     @abc.abstractmethod
-    def explore(app, emulator, appium, timesteps, timer, save_policy, policy_dir, cycle,  **kwargs):
+    def explore(app, emulator, appium, timesteps, timer, **kwargs):
         return "Explore"

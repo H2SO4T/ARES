@@ -73,12 +73,12 @@ class EmulatorLauncher:
             else:
                 self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
                                                  '-port', f'{self.android_port}', '-no-snapshot', '-no-boot-anim', '-wipe-data'])
-                time.sleep(80.0)
+                time.sleep(50.0)
         else:
             self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
                                              '-port', f'{self.android_port}', '-no-window', '-no-snapshot', '-no-audio',
                                              '-no-boot-anim', '-wipe-data'])
-            time.sleep(80.0)
+            time.sleep(50.0)
         os.system(f'adb -s emulator-{self.android_port} shell settings put global window_animation_scale 0')
         os.system(f'adb -s emulator-{self.android_port} shell settings put global transition_animation_scale 0')
         os.system(f'adb -s emulator-{self.android_port} shell settings put global animator_duration_scale 0')
