@@ -139,6 +139,30 @@ Connection errors usually depend on the emulator, using a real devices can reduc
 
 If you are interested in the project, please feel free to suggest new features!
 
+
+# Working with Apple Silicon (M1 SoCs)
+
+Using ARES on Apple Silicon is possible, but the configuration is a bit longer. The configuration steps are identical, except for the Python part.
+
+We have tested this procedure on a Mac Mini 16Gb, Python3.9 and a real device.
+
+## Install Miniconda and Setup
+* At first install `miniconda` from https://github.com/conda-forge/miniforge.
+* Create a venv using `conda create --name venv` and activate it `conda activate venv`.
+* Run `conda install pandas`, `conda install numpy` and `conda install scipy`.
+
+## Installing Pytorch on Apple Silicon
+
+* Run `brew install openblas`
+* Then clone pytorch: `git clone --recursive https://github.com/pytorch/pytorch`
+* `cd pytorch`
+* run `python setup.py build`
+* run `python setup.py develop`
+* Install the missing packages using pip: `stable_baselines3`, `loguru==0.5.0`, `androguard==3.3.5`, `Appium-Python-Client==1.0.2`, `cloudpickle==1.2.2`, `future==0.18.2` and `gym==0.18.0`
+* At last, modify il `parallel_exec.py` at line 99: insert a string with the path to the venv python (use `which python` when the venv is activated)
+
+Now the environt is ready!
+
 # Coming Soon
 
 * Reload a previously learned navigation policy 
