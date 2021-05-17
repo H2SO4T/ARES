@@ -24,6 +24,7 @@ def main():
     parser.add_argument('--instr_emma', default=False, action='store_true')
     # parameter to use in case you want to save the policy
     parser.add_argument('--save_policy', default=False, action='store_true')
+    parser.add_argument('--reload_policy', default=False, action='store_true')
     # activate this flag in case you want to run ARES on real devices
     parser.add_argument('--real_device', default=False, action='store_true')
     parser.add_argument('--appium_ports', help='delimited list input', type=str, required=True)
@@ -57,6 +58,7 @@ def main():
     algo = args.algo
     trials_per_app = args.trials_per_app
     save_policy = args.save_policy
+    reload_policy = args.reload_policy
     instr_jacoco = args.instr_jacoco
     instr_emma = args.instr_emma
     if instr_emma and instr_jacoco:
@@ -117,6 +119,8 @@ def main():
             cmd.append('--internet')
         if save_policy:
             cmd.append('--save_policy')
+        if save_policy:
+            cmd.append('--reload_policy')
         if real_device:
             cmd.append('--real_device')
         processes.append(subprocess.Popen(cmd))

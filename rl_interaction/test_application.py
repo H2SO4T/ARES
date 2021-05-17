@@ -46,6 +46,7 @@ def main():
     parser.add_argument('--instr_jacoco', default=False, action='store_true')
     parser.add_argument('--instr_emma', default=False, action='store_true')
     parser.add_argument('--save_policy', default=False, action='store_true')
+    parser.add_argument('--reload_policy', default=False, action='store_true')
     parser.add_argument('--real_device', default=False, action='store_true')
     parser.add_argument('--rotation', default=False, action='store_true')
     parser.add_argument('--internet', default=False, action='store_true')
@@ -66,6 +67,7 @@ def main():
 
     args = parser.parse_args()
     save_policy = args.save_policy
+    reload_policy = args.reload_policy
     max_trials = args.trials_per_app
     if max_trials <= 0:
         raise Exception('max_trials must be > 0')
@@ -133,14 +135,18 @@ def main():
                 logger.info(f'app: {app_name}, test {cycle} of {N} starting')
                 # coverage dir
                 coverage_dir = ''
+                # Creating coverage directory
                 if instr_emma or instr_jacoco:
                     coverage_dir = os.path.join(os.getcwd(), 'coverage', app_name, algo, str(cycle))
                     os.makedirs(coverage_dir, exist_ok=True)
                 # logs dir
                 log_dir = os.path.join(os.getcwd(), 'logs', app_name, algo, str(cycle))
                 os.makedirs(log_dir, exist_ok=True)
-                policy_dir = os.path.join(os.getcwd(), 'policies', app_name, algo)
+
+                # Creating the policies directory
+                policy_dir = os.path.join(os.getcwd(), 'policies')
                 os.makedirs(policy_dir, exist_ok=True)
+
                 # instantiating timer in minutes
                 coverage_dict = dict(coverage_dict_template)
                 widget_list = []
@@ -193,7 +199,8 @@ def main():
                     elif algo == 'test':
                         algorithm = TestApp()
                     flag = algorithm.explore(app, emulator, appium, timesteps, timer, save_policy=save_policy,
-                                             policy_dir=policy_dir, cycle=cycle)
+                                             reload_policy=reload_policy, app_name=app_name, policy_dir=policy_dir,
+                                             cycle=cycle)
                     if flag:
                         with open(f'logs{os.sep}success.log', 'a+') as f:
                             f.write(f'{app_name}\n')
