@@ -88,25 +88,26 @@ Flag `--real_device` is required.
 
 * `--instr_emma`,  If you want to collect code coverage with EMMA.
 * `--instr_jacoco`,  If you want to collect code coverage using JaCoCo.
-  `--save_policy`, you can save an exploration policy of your app and use it in new explorations.
+  `--save_policy`, You can save an exploration policy of your app and use it in new explorations.
+  `--reload_policy`, Tell ARES to reload a previous policy.
 * `--real_device`, If you are using a real device you must specify it.
-* `--timer: [time_in_minutes]`, you can specify the time to test the app, required=True.
-* `--platform_version [android_version]`, you have to specify the android version, default = 10.0 . 
-* `--iterations [number_of_iterations]`, how many times you want to repeat the test, default=10 .
-* `--algo [algo]`, choose one between SAC random and Q-Learning (SAC is the algorithm used in the paper).
-* `--timesteps`, number of time steps of each testing, (`--timer` has higher priority ), required=True.
+* `--timer: [time_in_minutes]`, You can specify the time to test the app, required=True.
+* `--platform_version [android_version]`, You have to specify the android version, default = 10.0 . 
+* `--iterations [number_of_iterations]`, How many times you want to repeat the test, default=10 .
+* `--algo [algo]`, Choose one between SAC random and Q-Learning (SAC is the algorithm used in the paper).
+* `--timesteps`, Number of time steps of each testing, (`--timer` has higher priority ), required=True.
 * `--rotation`, If you want to enable rotation.
 * `--internet`, If you want to toggle data during testing.
-* `--emu`, if you are using an emulator, you need to specify in what mode (normal or headless).
-* `--max_timesteps`, you can specify the duration of an episode, default = 250 .
-* `--pool_strings`, name of the file to pick the strings from, default = strings.txt .
-* `--list_devices [emulators]`, a list of the device_names (avd_names), required = True.
-* `--appium_ports [ports]`, a list of the ports you want to use, required = True.
-* `--android_ports [ports]`, a list  of the adb-ports you want to use, required = True.
-* `--udids [strings]`, a list of the udids of the real devices, in case you are using 
+* `--emu`, If you are using an emulator, you need to specify in what mode (normal or headless).
+* `--max_timesteps`, You can specify the duration of an episode, default = 250 .
+* `--pool_strings`, Name of the file to pick the strings from, default = strings.txt .
+* `--list_devices [emulators]`, A list of the device_names (avd_names), required = True.
+* `--appium_ports [ports]`, A list of the ports you want to use, required = True.
+* `--android_ports [ports]`, A list  of the adb-ports you want to use, required = True.
+* `--udids [strings]`, A list of the udids of the real devices, in case you are using 
 emulators don't use this flag (ARES will assign udids for you).
-* `--trials_per_app`, how many times ARES attempts to launch an app.
-* `--path [folders]`,the folder containing all apks, ARES will equally subdivide the apps between the devices available.  
+* `--trials_per_app`, How many times ARES attempts to launch an app.
+* `--path [folders]`,The folder containing all apks, ARES will equally subdivide the apps between the devices available.  
 
 # Testing Phase, Coverage Reports and Logs
 
@@ -163,6 +164,8 @@ We have tested this procedure on a Mac Mini 16Gb, Python3.9 and a real device.
 
 Now the environt is ready!
 
-# Coming Soon
+# *New* Saving and Reloading Policies
 
-* Reload a previously learned navigation policy 
+* Use the flags `save-policy` and `reload-policy` save or reload previous policies. The policies are saved under the 
+  folder `policies` with the same name of the apk file in apps folder. WARNING: If `save-policy` is True, 
+  then at the end of the testing the previous policy will be overwritten.
