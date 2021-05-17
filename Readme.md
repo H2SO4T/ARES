@@ -166,6 +166,6 @@ Now the environt is ready!
 
 # *New* Saving and Reloading Policies
 
-* Use the flags `save-policy` and `reload-policy` save or reload previous policies. The policies are saved under the 
+* Use the flags `save-policy` and `reload-policy` to save or reload previous policies. The policies are saved under the 
   folder `policies` with the same name of the apk file in apps folder. WARNING: If `save-policy` is True, 
   then at the end of the testing the previous policy will be overwritten.
