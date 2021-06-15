@@ -150,7 +150,7 @@ We have tested this procedure on a Mac Mini 16Gb, Python3.9 and a real device.
 ## Install Miniconda and Setup
 * At first install `miniconda` from https://github.com/conda-forge/miniforge.
 * Create a venv using `conda create --name venv` and activate it `conda activate venv`.
-* Run `conda install pandas`, `conda install numpy` and `conda install scipy`.
+* Run `conda install pandas`, `conda install numpy` and `conda install scipy`, and `conda install pyyaml`.
 
 ## Installing Pytorch on Apple Silicon
 
