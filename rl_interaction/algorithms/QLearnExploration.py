@@ -6,7 +6,7 @@ from rl_interaction.utils.q import Q
 class QLearnAlgorithm(ExplorationAlgorithm):
 
     @staticmethod
-    def explore(app, emulator, appium, timesteps, timer, eps=0.8):
+    def explore(app, emulator, appium, timesteps, timer, eps=0.8, **kwargs):
         try:
             t = Timer(timer)
             q_l = Q(app, t, eps=eps)

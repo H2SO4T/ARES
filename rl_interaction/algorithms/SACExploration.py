@@ -13,7 +13,7 @@ class SACAlgorithm(ExplorationAlgorithm):
 
     @staticmethod
     def explore(app, emulator, appium, timesteps, timer, save_policy=False, app_name='', reload_policy=False,
-                policy_dir='.', cycle=0, train_freq=5, target_update_interval=10):
+                policy_dir='.', cycle=0, train_freq=5, target_update_interval=10, **kwargs):
         try:
             env = TimeFeatureWrapper(app)
             # Loading a previous policy and checking file existence
