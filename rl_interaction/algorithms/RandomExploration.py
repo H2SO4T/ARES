@@ -12,6 +12,10 @@ class RandomAlgorithm(ExplorationAlgorithm):
             while not t.timer_expired():
                 action = app.action_space.sample()
                 o, _, done, _ = app.step(action)
+                app.coverage_count += 1
+                if (app.timesteps % 25 and app.instr) == 0:
+                    app.instr_funct(udid=app.udid, package=app.package, coverage_dir=app.coverage_dir,
+                                    coverage_count=app.coverage_count)
                 if done:
                     app.reset()
             return True
