@@ -8,7 +8,7 @@ ARES is a black-box tool that uses Deep Reinforcement Learning to test and explo
 
 # Publication
 
-More details about **ARES** can be found in the pre-print paper "[Deep Reinforcement Learning for Black-Box Testing of Android Apps](https://arxiv.org/abs/2101.02636)"
+More details about **ARES** can be found in the TOSEM paper "[Deep Reinforcement Learning for Black-Box Testing of Android Apps](https://dl.acm.org/doi/abs/10.1145/3502868)"
 Please use the following bibtex entry to cite our work:
 
 
