@@ -26,6 +26,7 @@ class SACAlgorithm(ExplorationAlgorithm):
             else:
                 print('Starting training from zero')
                 model = SAC(MlpPolicy, env, verbose=1, train_freq=train_freq, target_update_interval=target_update_interval)
+            model.env.envs[0].check_activity()
             callback = TimerCallback(timer=timer, app=app)
             model.learn(total_timesteps=timesteps, callback=callback)
             # It will overwrite the previous policy

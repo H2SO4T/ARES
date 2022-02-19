@@ -175,7 +175,7 @@ class RLApplicationEnv(Env):
                                        dtype=numpy.int64)
         self.observation_space = spaces.Box(low=0, high=1, shape=(self.OBSERVATION_SPACE,), dtype=numpy.int32)
         self.dims = self.driver.get_window_size()
-        self.check_activity()
+        # self.check_activity()
 
     @logger.catch()
     def step(self, action_number):
