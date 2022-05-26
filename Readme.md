@@ -1,5 +1,5 @@
 [![Android Version](https://img.shields.io/badge/Android-6.0%2B-brightgreen.svg?logo=android&logoColor=white)](https://developer.android.com/)
-[![Python Version](https://img.shields.io/badge/Python-3.7%20%7C%203.8%20%7C%203.9-green.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![Python Version](https://img.shields.io/badge/Python-3.7%2B-green.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-AGPL%20&%20Commercial-blue.svg)](https://github.com/H2SO4T/ARES/blob/master/LICENSE.COMMERCIAL)
 
 # ARES
@@ -30,7 +30,7 @@ keywords = {Deep reinforcement learning, Android testing}}
 
 * Android emulator or Android smartphone (more stable)
 * MacOS or Ubuntu or Windows
-* python 3.5 to 3.9
+* Python 3.7+
 
 # Compatibility
 
