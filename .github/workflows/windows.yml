@@ -28,3 +28,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r ./rl_interaction/requirements.txt
+
+      - name: Install Appium
+        run: |
+          npm install -g appium appium-doctor
+          appium-doctor --android
+
+      - name: Run tests
+        run: |
+          pytest --verbose --cov=./ --cov-report xml
