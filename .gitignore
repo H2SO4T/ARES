@@ -1,21 +1,66 @@
-/venv/
-/rl_interaction/logs/
-*.png
-.idea
-/rl_interaction/apps
-/rl_interaction/pickle_files
-/__pycache__
-rl_interaction/utils/__pycache__/*
-rl_interaction/__pycache__/*
-rl_interaction/coverage/
-rl_interaction/logger.log
-.old/parallel_rl_env.py
-rl_interaction/tested_apps
-rl_interaction/instrumented_apps
-rl_interaction/.DS_Store
-rl_interaction/apps copia/
-rl_interaction/logs copia/
+# User-specific stuff:
+.idea/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+
+# PyBuilder
+target/
+
+# pyenv
+.python-version
+
+# dotenv
+.env
+
+# virtualenv
+.venv/
+venv/
+ENV/
+
+
 .DS_Store
-.old
+/rl_interaction/pickle_files/
+/rl_interaction/logs/
+/rl_interaction/apps/
+rl_interaction/coverage/
+rl_interaction/tested_apps/
+rl_interaction/instrumented_apps/
+rl_interaction/logs copia/
+rl_interaction/apps copia/
 rl_interaction/coverage copia/
-algorithms/__pycache__/*
+.old/
