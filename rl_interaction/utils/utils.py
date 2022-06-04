@@ -10,21 +10,23 @@ class Utils:
 
     @staticmethod
     def get_adb_executable_path() -> str:
-        adb_path = shutil.which("adb")
-        if not os.path.isfile(adb_path):
+        adb_path = shutil.which(
+            "adb", path=os.path.join(os.environ.get("ANDROID_HOME"), "platform-tools")
+        )
+        if not adb_path or not os.path.isfile(adb_path):
             raise FileNotFoundError(
-                "Appium executable is not available! "
-                "Please check your Appium installation."
+                "Adb (Android Debug Bridge) executable is not available! "
+                "Please check your Android SDK installation."
             )
         return adb_path
 
     @staticmethod
     def get_appium_executable_path() -> str:
         appium_path = shutil.which("appium")
-        if not os.path.isfile(appium_path):
+        if not appium_path or not os.path.isfile(appium_path):
             raise FileNotFoundError(
-                "Adb executable is not available! Make sure to have adb (Android "
-                "Debug Bridge) installed and added to the PATH environment variable."
+                "Appium executable is not available! "
+                "Please check your Appium installation."
             )
         return appium_path
 
@@ -33,7 +35,7 @@ class Utils:
         emulator_path = shutil.which(
             "emulator", path=os.path.join(os.environ.get("ANDROID_HOME"), "emulator")
         )
-        if not os.path.isfile(emulator_path):
+        if not emulator_path or not os.path.isfile(emulator_path):
             raise FileNotFoundError(
                 "Emulator executable is not available! "
                 "Please check your Android SDK installation."
