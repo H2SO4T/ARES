@@ -7,4 +7,4 @@ class ExplorationAlgorithm:
     @staticmethod
     @abc.abstractmethod
     def explore(app, emulator, appium, timesteps, timer, **kwargs):
-        return "Explore"
+        raise NotImplementedError()

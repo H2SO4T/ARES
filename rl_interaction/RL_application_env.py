@@ -16,32 +16,34 @@ from multiprocessing import Process, Queue
 from appium import webdriver
 from collections import deque
 
+adb_path: str = Utils.get_adb_executable_path()
+
 
 def search_package_and_setprop(folder):
     '''
     result = subprocess.run(
-        ["adb", "shell", "su", "0", "find", "/data/data/", "-type", "d", "-name", f'"{package}*"'],
+        [adb_path, "shell", "su", "0", "find", "/data/data/", "-type", "d", "-name", f'"{package}*"'],
         capture_output=True)
     folder = result.stdout.decode('utf-8').strip('\n')
     '''
-    command = f'adb shell "su 0 setprop jacoco.destfile /data/data/{folder}/jacoco.exec"'
+    command = f'{adb_path} shell "su 0 setprop jacoco.destfile /data/data/{folder}/jacoco.exec"'
     os.popen(command).read()
 
 
 def collect_coverage_emma(udid, package, coverage_dir, coverage_count):
-    os.system(f'adb -s {udid} shell am broadcast -p {package}  -a edu.gatech.m3.emma.COLLECT_COVERAGE')
-    os.system(f'adb -s {udid} pull /mnt/sdcard/coverage.ec {os.path.join(".", coverage_dir, str(coverage_count))}.ec')
+    os.system(f'{adb_path} -s {udid} shell am broadcast -p {package} -a edu.gatech.m3.emma.COLLECT_COVERAGE')
+    os.system(f'{adb_path} -s {udid} pull /mnt/sdcard/coverage.ec {os.path.join(".", coverage_dir, str(coverage_count))}.ec')
 
 
 def collect_coverage_jacoco(udid, package, coverage_dir, coverage_count):
-    os.system(f'adb -s {udid} shell am broadcast -p {package} -a intent.END_COVERAGE')
-    os.system(f'adb -s {udid} pull /sdcard/Android/data/{package}/files/coverage.ec '
+    os.system(f'{adb_path} -s {udid} shell am broadcast -p {package} -a intent.END_COVERAGE')
+    os.system(f'{adb_path} -s {udid} pull /sdcard/Android/data/{package}/files/coverage.ec '
               f'{os.path.join(".", coverage_dir, str(coverage_count))}.ec')
 
 
 def bug_handler(bug_queue, udid):
-    os.system(f'adb -s {udid} logcat -c')
-    proc = subprocess.Popen(['adb', '-s', udid, 'logcat'], stdout=subprocess.PIPE)
+    os.system(f'{adb_path} -s {udid} logcat -c')
+    proc = subprocess.Popen([adb_path, '-s', udid, 'logcat'], stdout=subprocess.PIPE)
     while True:
         dump_bug = ''
         try:
@@ -585,19 +587,19 @@ class RLApplicationEnv(Env):
     def generate_intent(self, num):
         if len(self.intents[num]["action"]) > 0:
             if self.intents[num]['type'] == 'service':
-                command_string = f'adb -s {self.udid} shell su 0 am startservice -n ' \
+                command_string = f'{adb_path} -s {self.udid} shell su 0 am startservice -n ' \
                                  f'"{self.package}/{self.intents[num]["name"]}" -a "{self.intents[num]["action"][0]}"'
             else:
-                command_string = f'adb -s {self.udid} shell su 0 am broadcast -n ' \
+                command_string = f'{adb_path} -s {self.udid} shell su 0 am broadcast -n ' \
                                  f'"{self.package}/{self.intents[num]["name"]}" -a "{self.intents[num]["action"][0]}"'
             # in case there is more than one action
             self.intents[num]["action"].rotate(1)
         else:
             if self.intents[num]['type'] == 'service':
-                command_string = f'adb -s {self.udid} shell su 0 am startservice -n ' \
+                command_string = f'{adb_path} -s {self.udid} shell su 0 am startservice -n ' \
                                  f'"{self.package}/{self.intents[num]["name"]}"'
             else:
-                command_string = f'adb -s {self.udid} shell su 0 am broadcast ' \
+                command_string = f'{adb_path} -s {self.udid} shell su 0 am broadcast ' \
                                  f'-n "{self.package}/{self.intents[num]["name"]}"'
         if self.emulator is None:
             command_string = command_string.replace('su 0', '')
