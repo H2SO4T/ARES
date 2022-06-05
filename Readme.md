@@ -1,3 +1,6 @@
+[![MacOS Build Status](https://github.com/H2SO4T/ARES/workflows/MacOS/badge.svg)](https://github.com/H2SO4T/ARES/actions?query=workflow%3AMacOS)
+[![Ubuntu Build Status](https://github.com/H2SO4T/ARES/workflows/Ubuntu/badge.svg)](https://github.com/H2SO4T/ARES/actions?query=workflow%3AUbuntu)
+[![Windows Build Status](https://github.com/H2SO4T/ARES/workflows/Windows/badge.svg)](https://github.com/H2SO4T/ARES/actions?query=workflow%3AWindows)
 [![Android Version](https://img.shields.io/badge/Android-6.0%2B-brightgreen.svg?logo=android&logoColor=white)](https://developer.android.com/)
 [![Python Version](https://img.shields.io/badge/Python-3.7%2B-green.svg?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-AGPL%20&%20Commercial-blue.svg)](https://github.com/H2SO4T/ARES/blob/master/LICENSE.COMMERCIAL)
