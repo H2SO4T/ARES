@@ -1,13 +1,46 @@
 import os
+import shutil
 import subprocess
 import time
-import pprint
-import platform
-from multiprocessing import Process
-import signal
+
+from appium.webdriver.appium_service import AppiumService
 
 
 class Utils:
+
+    @staticmethod
+    def get_adb_executable_path() -> str:
+        adb_path = shutil.which(
+            "adb", path=os.path.join(os.environ.get("ANDROID_HOME"), "platform-tools")
+        )
+        if not adb_path or not os.path.isfile(adb_path):
+            raise FileNotFoundError(
+                "Adb (Android Debug Bridge) executable is not available! "
+                "Please check your Android SDK installation."
+            )
+        return adb_path
+
+    @staticmethod
+    def get_appium_executable_path() -> str:
+        appium_path = shutil.which("appium")
+        if not appium_path or not os.path.isfile(appium_path):
+            raise FileNotFoundError(
+                "Appium executable is not available! "
+                "Please check your Appium installation."
+            )
+        return appium_path
+
+    @staticmethod
+    def get_emulator_executable_path() -> str:
+        emulator_path = shutil.which(
+            "emulator", path=os.path.join(os.environ.get("ANDROID_HOME"), "emulator")
+        )
+        if not emulator_path or not os.path.isfile(emulator_path):
+            raise FileNotFoundError(
+                "Emulator executable is not available! "
+                "Please check your Android SDK installation."
+            )
+        return emulator_path
 
     @staticmethod
     def compute_coverage(coverage_dict):
@@ -26,22 +59,19 @@ class Utils:
 
 class AppiumLauncher:
 
-    def __init__(self, port):
-        self.port = port
-        self.system = platform.system()
+    def __init__(self, port: int):
+        self.port: int = port
+        self.appium_service: AppiumService = AppiumService()
+        self.adb_path: str = Utils.get_adb_executable_path()
         self.start_appium()
 
     def terminate(self):
-        self.process.terminate()
+        self.appium_service.stop()
         time.sleep(4.0)
 
     def start_appium(self):
-        if self.system == 'Windows':
-            self.process = subprocess.Popen(['appium', '-p', f'{self.port}', '--log-level', 'error:error'],
-                                            creationflags=0x00000008)
-        else:
-            self.process = subprocess.Popen(['appium', '-p', f'{self.port}', '--log-level', 'error:error'])
-        os.system('adb start-server')
+        self.appium_service.start(args=["-p", str(self.port)])
+        os.system(f"{self.adb_path} start-server")
         time.sleep(4.0)
 
     def restart_appium(self):
@@ -52,36 +82,39 @@ class AppiumLauncher:
 class EmulatorLauncher:
 
     def __init__(self, emu, device_name, android_port, speedup=False):
-        self.device_name = '@'+device_name.replace(' ', '_')
-        self.emu = emu
-        self.android_port = android_port
-        self.speedup = speedup
+        self.device_name: str = '@'+device_name.replace(' ', '_')
+        self.emu: str = emu
+        self.android_port: int = android_port
+        self.speedup: bool = speedup
+        self.adb_path: str = Utils.get_adb_executable_path()
+        self.emulator_path: str = Utils.get_emulator_executable_path()
         self.start_emulator()
 
     def terminate(self):
-        # signal.CTRL_C_EVENT
-        self.process.send_signal(signal.SIGINT)
+        os.system(f'{self.adb_path} -s emulator-{self.android_port} emu kill')
         time.sleep(5.0)
 
     def start_emulator(self):
-
         if self.emu == 'normal':
             if self.speedup:
-                self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
-                                                 '-port', f'{self.android_port}'])
+                subprocess.Popen([self.emulator_path, self.device_name,
+                                  '-port', str(self.android_port)])
                 time.sleep(40)
             else:
-                self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
-                                                 '-port', f'{self.android_port}', '-no-snapshot', '-no-boot-anim', '-wipe-data'])
+                subprocess.Popen([self.emulator_path, self.device_name,
+                                  '-port', str(self.android_port),
+                                  '-no-snapshot', '-no-boot-anim', '-wipe-data'])
                 time.sleep(50.0)
         else:
-            self.process = subprocess.Popen([f'{os.environ["ANDROID_HOME"]}/emulator/emulator', f'{self.device_name}',
-                                             '-port', f'{self.android_port}', '-no-window', '-no-snapshot', '-no-audio',
-                                             '-no-boot-anim', '-wipe-data'])
+            # Headless emulator.
+            subprocess.Popen([self.emulator_path, self.device_name,
+                              '-port', str(self.android_port), '-no-window',
+                              '-no-snapshot', '-no-audio', '-no-boot-anim', '-wipe-data'])
             time.sleep(50.0)
-        os.system(f'adb -s emulator-{self.android_port} shell settings put global window_animation_scale 0')
-        os.system(f'adb -s emulator-{self.android_port} shell settings put global transition_animation_scale 0')
-        os.system(f'adb -s emulator-{self.android_port} shell settings put global animator_duration_scale 0')
+
+        os.system(f'{self.adb_path} -s emulator-{self.android_port} shell settings put global window_animation_scale 0')
+        os.system(f'{self.adb_path} -s emulator-{self.android_port} shell settings put global transition_animation_scale 0')
+        os.system(f'{self.adb_path} -s emulator-{self.android_port} shell settings put global animator_duration_scale 0')
 
     def restart_emulator(self):
         self.terminate()

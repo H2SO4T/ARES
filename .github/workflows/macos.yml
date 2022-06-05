@@ -34,6 +34,25 @@ jobs:
           npm install -g appium appium-doctor
           appium-doctor --android
 
+      - name: Setup test emulator
+        run: |
+          export PATH="${PATH}:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools"
+          sudo chmod a+x ${ANDROID_HOME}/tools/bin/avdmanager
+          echo yes | sudo -E env "PATH=$PATH" sdkmanager "emulator" "system-images;android-25;default;x86" | grep -v = || true
+          echo no | avdmanager create avd -f -n test -k "system-images;android-25;default;x86" --abi x86
+
       - name: Run tests
         run: |
           pytest test/ --verbose --cov=./ --cov-report xml
+          echo '### Test report' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          coverage report >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '### Test logs' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat logs/logger.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

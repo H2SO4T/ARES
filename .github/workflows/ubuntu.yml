@@ -37,3 +37,9 @@ jobs:
       - name: Run tests
         run: |
           pytest test/ --verbose --cov=./ --cov-report xml
+          echo '### Test report' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          coverage report >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
