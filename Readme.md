@@ -8,6 +8,7 @@
 # ARES
 
 ARES is a black-box tool that uses Deep Reinforcement Learning to test and explore Android applications.
+ARES does not instrument any application, however supports emma code coverage (for legacy apps) and JaCoCo (to instruement Android apps from source code go to https://github.com/H2SO4T/COSMO)
 
 # Publication
 
