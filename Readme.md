@@ -150,7 +150,7 @@ If you are interested in the project, please feel free to suggest new features!
 
 Using ARES on Apple Silicon is possible, but the configuration is a bit longer. The configuration steps are identical, except for the Python part.
 
-We have tested this procedure on a Mac Mini 16Gb, Python3.9 and a real device.
+We tested this procedure on a Mac Mini 16Gb, Python3.9 and a real device.
 
 ## Install Miniconda and Setup
 * At first install `miniconda` from https://github.com/conda-forge/miniforge.
